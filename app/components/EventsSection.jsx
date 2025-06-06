@@ -213,10 +213,6 @@ export default function EventsSection({ maxEvents = 6 }) {
     <>
       {/* Events Section */}
       <section id="events" className="py-32 relative opacity-0 transform translate-y-8 transition-all duration-1000 ease-out overflow-hidden">
-        {/* Background Effects */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,215,0,0.1),transparent_50%)]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,215,0,0.05),transparent_50%)]"></div>
-        
         <div className="container mx-auto px-6 relative z-10">
           <div className="text-center mb-16">
             <h2 className="events-title text-5xl md:text-6xl font-bold text-gold mb-8 opacity-0 transform translate-y-6">
