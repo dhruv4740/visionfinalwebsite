@@ -167,16 +167,16 @@ export default function EventsSection({ maxEvents = 6 }) {
     }, 5000);
   };
 
+    // ...existing code...
+  
+  // Update this function around line 140
   const handleRegister = (evt, e) => {
     e.stopPropagation();
-    if (evt.registrationLink) {
-      // External registration link
-      window.open(evt.registrationLink, "_blank");
-    } else {
-      // Internal registration modal
-      openRegistrationModal(evt, e);
-    }
+    // Always use internal registration modal instead of external links
+    openRegistrationModal(evt, e);
   };
+  
+  // ...rest of your existing code stays the same...
 
   if (loading) {
     return (
