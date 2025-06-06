@@ -55,7 +55,7 @@ export default function Home() {
                 Ready to Shape the Future?
               </h2>
               <p className="text-gray-200 mb-12 text-xl leading-relaxed max-w-2xl mx-auto">
-                Join Vision and become part of the next generation of AR/VR innovators. The future is immersive.
+                Join Team Vision and become part of the next generation of AR/VR innovators. The future is immersive.
               </p>
               <button
                 onClick={openModal}
