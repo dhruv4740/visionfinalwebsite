@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1747982313656,
+    "name": "Dhruv Kothari",
+    "email": "dk1@somaiya.edu",
+    "message": "test message",
+    "timestamp": "2025-05-23T06:38:33.656Z",
+    "status": "read"
+  },
+  {
+    "id": 1748243872281,
+    "name": "Soniya Vinchurkar",
+    "email": "soniya.v@somaiya.edu",
+    "message": "Test message",
+    "timestamp": "2025-05-26T07:17:52.281Z",
+    "status": "unread"
+  },
+  {
+    "id": 1748838401208,
+    "name": "Dhruv Kothari",
+    "email": "dk1@somaiya.edu",
+    "message": "test message",
+    "timestamp": "2025-06-02T04:26:41.208Z",
+    "status": "unread"
+  },
+  {
+    "id": 1748839788466,
+    "name": "Soniya Vinchurkar",
+    "email": "soniya.v@somaiya.edu",
+    "message": "test msg 3",
+    "timestamp": "2025-06-02T04:49:48.466Z",
+    "status": "unread"
+  }
+]

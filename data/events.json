@@ -1,0 +1,50 @@
+[
+  {
+    "id": "1747992290665",
+    "title": "Workshop",
+    "date": "2025-06-20",
+    "time": "11am to 12pm",
+    "location": "B407, KJSSE",
+    "description": "workshop",
+    "image": "https://media.licdn.com/dms/image/v2/D560BAQERJPtLJ4uhnA/company-logo_200_200/company-logo_200_200/0/1724480524646?e=2147483647&v=beta&t=XJdaR5LD22_GWlONGSwbeacMcH1BMr5NekAo7fM_PAo",
+    "registrationLink": "https://forms.google.com",
+    "createdAt": "2025-05-23T09:24:50.666Z",
+    "updatedAt": "2025-05-23T09:24:50.666Z"
+  },
+  {
+    "id": "1747992331064",
+    "title": "REALMS",
+    "date": "2025-02-20",
+    "time": "11am to 12pm",
+    "location": "B407, KJSSE",
+    "description": "Hackathon",
+    "image": "https://realms.visionkjsce.tech/assets/logo-DDtisBHy.png",
+    "registrationLink": "https://forms.google.com",
+    "createdAt": "2025-05-23T09:25:31.064Z",
+    "updatedAt": "2025-05-26T05:36:33.797Z",
+    "registrationCutoffDate": "",
+    "category": "",
+    "maxAttendees": "",
+    "isOnline": false,
+    "meetingLink": "",
+    "prerequisites": "",
+    "contactEmail": "",
+    "tags": "AR, VR , XR",
+    "eventType": "workshop",
+    "duration": "",
+    "price": "",
+    "organizer": ""
+  },
+  {
+    "id": "1748239093537",
+    "title": "Snap AR",
+    "date": "2025-01-10",
+    "time": "12pm to 4pm",
+    "location": "B413",
+    "description": "test",
+    "image": null,
+    "registrationLink": null,
+    "createdAt": "2025-05-26T05:58:13.537Z",
+    "updatedAt": "2025-05-26T05:58:13.537Z"
+  }
+]
