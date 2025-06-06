@@ -33,7 +33,7 @@ export default function ApplicationsAdmin() {
   const fetchApplications = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/applications');
+      const response = await fetch('/api/apply');
       
       if (!response.ok) {
         throw new Error('Failed to fetch applications');
