@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import EventRegistrationModal from "./EventRegistrationModal";
 
 export default function EventsSection({ maxEvents = 6 }) {
   const [events, setEvents] = useState([]);
@@ -10,6 +11,11 @@ export default function EventsSection({ maxEvents = 6 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [closing, setClosing] = useState(false);
   const [cardPosition, setCardPosition] = useState({ x: 0, y: 0, width: 0, height: 0 });
+
+  // Registration modal state
+  const [registrationEvent, setRegistrationEvent] = useState(null);
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState('');
 
   useEffect(() => {
     async function fetchEvents() {
@@ -140,15 +146,41 @@ export default function EventsSection({ maxEvents = 6 }) {
     }, 400);
   };
 
+  // Registration modal functions
+  const openRegistrationModal = (evt, e) => {
+    e.stopPropagation();
+    setRegistrationEvent(evt);
+    setIsRegistrationOpen(true);
+  };
+
+  const closeRegistrationModal = () => {
+    setIsRegistrationOpen(false);
+    setTimeout(() => {
+      setRegistrationEvent(null);
+    }, 300);
+  };
+
+  const handleRegistrationSuccess = (message) => {
+    setRegistrationSuccess(message);
+    setTimeout(() => {
+      setRegistrationSuccess('');
+    }, 5000);
+  };
+
   const handleRegister = (evt, e) => {
     e.stopPropagation();
-    if (evt.registrationLink) window.open(evt.registrationLink, "_blank");
+    if (evt.registrationLink) {
+      // External registration link
+      window.open(evt.registrationLink, "_blank");
+    } else {
+      // Internal registration modal
+      openRegistrationModal(evt, e);
+    }
   };
 
   if (loading) {
     return (
       <section className="py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,215,0,0.1),transparent_50%)]"></div>
         <div className="container mx-auto px-6 relative z-10">
           <div className="text-center mb-16">
             <div className="h-12 bg-gradient-to-r from-transparent via-gold/20 to-transparent rounded-full mb-6 animate-pulse"></div>
@@ -211,6 +243,13 @@ export default function EventsSection({ maxEvents = 6 }) {
 
   return (
     <>
+      {/* Success Message */}
+      {registrationSuccess && (
+        <div className="fixed top-4 right-4 z-50 bg-green-900/20 border border-green-500/50 text-green-300 px-6 py-3 rounded-lg shadow-lg backdrop-blur-sm">
+          ✅ {registrationSuccess}
+        </div>
+      )}
+
       {/* Events Section */}
       <section id="events" className="py-32 relative opacity-0 transform translate-y-8 transition-all duration-1000 ease-out overflow-hidden">
         <div className="container mx-auto px-6 relative z-10">
@@ -268,8 +307,8 @@ export default function EventsSection({ maxEvents = 6 }) {
                         </span>
                       </div>
 
-                      {/* Quick Register Button */}
-                      {isUpcoming(evt.date) && evt.registrationLink && (
+                      {/* Quick Register Button - Updated */}
+                      {isUpcoming(evt.date) && (
                         <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                           <button
                             onClick={(e) => handleRegister(evt, e)}
@@ -301,7 +340,7 @@ export default function EventsSection({ maxEvents = 6 }) {
                         {evt.description}
                       </p>
                       
-                      {/* Action Buttons */}
+                      {/* Action Buttons - Updated */}
                       <div className="flex gap-3 mt-auto">
                         <button 
                           onClick={(e) => {
@@ -313,7 +352,7 @@ export default function EventsSection({ maxEvents = 6 }) {
                           View Details
                         </button>
                         
-                        {isUpcoming(evt.date) && evt.registrationLink && (
+                        {isUpcoming(evt.date) && (
                           <button 
                             onClick={(e) => handleRegister(evt, e)}
                             className="flex-1 px-4 py-2.5 bg-gradient-to-r from-gold/20 to-yellow-500/20 hover:from-gold/30 hover:to-yellow-500/30 text-gold hover:text-yellow-300 border border-gold/40 hover:border-gold/60 rounded-lg font-medium transition-all duration-300 text-sm backdrop-blur-sm hover:shadow-lg hover:shadow-gold/25"
@@ -451,205 +490,214 @@ export default function EventsSection({ maxEvents = 6 }) {
                 >
                   Close
                 </button>
-                {isUpcoming(selectedEvent.date) && selectedEvent.registrationLink && (
-                  <a 
-                    href={selectedEvent.registrationLink} 
-                    target="_blank"
-                    rel="noopener noreferrer"
+                {isUpcoming(selectedEvent.date) && (
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRegister(selectedEvent, e);
+                    }}
                     className="flex-1 px-6 py-3 bg-gradient-to-r from-gold/20 to-yellow-500/20 hover:from-gold/30 hover:to-yellow-500/30 text-gold hover:text-yellow-300 border border-gold/40 hover:border-gold/60 rounded-lg font-semibold transition-all duration-300 text-center backdrop-blur-sm hover:shadow-lg hover:shadow-gold/25"
                   >
                     Register Now
-                  </a>
+                  </button>
                 )}
               </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Event Registration Modal */}
+      <EventRegistrationModal
+        event={registrationEvent}
+        isOpen={isRegistrationOpen}
+        onClose={closeRegistrationModal}
+        onSuccess={handleRegistrationSuccess}
+      />
             
-                  {/* Enhanced CSS with Smooth Animations */}
-                  <style jsx global>{`
-                    /* Section visibility */
-                    #events {
-                      opacity: 0;
-                      transform: translateY(30px);
-                      transition: opacity 1s ease, transform 1s ease;
-                    }
-                    
-                    #events.visible {
-                      opacity: 1;
-                      transform: translateY(0);
-                    }
-            
-                    /* Title simple fade up */
-                    @keyframes fadeUp {
-                      0% { 
-                        opacity: 0; 
-                        transform: translateY(20px); 
-                      }
-                      100% { 
-                        opacity: 1; 
-                        transform: translateY(0); 
-                      }
-                    }
-            
-                    .events-title.animate-fade-up {
-                      animation: fadeUp 0.8s ease-out forwards;
-                    }
-            
-                    /* Professional typewriter effect for subtitle */
-                    @keyframes typewriter {
-                      0% { width: 0; }
-                      100% { width: 100%; }
-                    }
-            
-                    @keyframes blinkCursor {
-                      0%, 50% { border-right: 3px solid #ffd700; }
-                      51%, 100% { border-right: 3px solid transparent; }
-                    }
-            
-                    /* Subtitle typewriter effect */
-                    .events-subtitle span {
-                      display: inline-block;
-                      overflow: hidden;
-                      white-space: nowrap;
-                      width: 0;
-                      border-right: 3px solid transparent;
-                    }
-            
-                    .events-subtitle.animate-typewriter span {
-                      animation: typewriter 2s steps(60) forwards, blinkCursor 0.75s infinite;
-                    }
-            
-                    /* Professional card fade-up animation */
-                    @keyframes cardFadeUp {
-                      0% { 
-                        opacity: 0; 
-                        transform: translateY(40px) scale(0.95); 
-                      }
-                      100% { 
-                        opacity: 1; 
-                        transform: translateY(0) scale(1); 
-                      }
-                    }
-            
-                    /* Event cards base state - stay visible once animated */
-                    .event-card {
-                      opacity: 0;
-                      transform: translateY(40px) scale(0.95);
-                      transition: none;
-                    }
-            
-                    .event-cards-wrapper [class*='grid'] > div {
-                      opacity: 0;
-                      transform: translateY(40px) scale(0.95);
-                      transition: none;
-                    }
-            
-                    /* Professional card animation - maintains visibility */
-                    .event-card.animate-card-fade-up,
-                    .event-cards-wrapper [class*='grid'] > div.animate-card-fade-up {
-                      animation: cardFadeUp 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
-                      /* Keep cards visible after animation */
-                      animation-fill-mode: forwards;
-                    }
-            
-                    /* Enhanced Modal Animations from events page */
-                    @keyframes fadeIn {
-                      from { opacity: 0; }
-                      to { opacity: 1; }
-                    }
-                    @keyframes fadeOut {
-                      from { opacity: 1; }
-                      to { opacity: 0; }
-                    }
-                    @keyframes modalScaleIn {
-                      0% {
-                        transform: translate(calc(var(--card-x) - 50vw + var(--card-width) / 2), calc(var(--card-y) - 50vh + var(--card-height) / 2)) scale(0.2);
-                        opacity: 0;
-                      }
-                      100% {
-                        transform: translate(0, 0) scale(1);
-                        opacity: 1;
-                      }
-                    }
-                    @keyframes modalScaleOut {
-                      0% {
-                        transform: translate(0, 0) scale(1);
-                        opacity: 1;
-                      }
-                      100% {
-                        transform: translate(calc(var(--card-x) - 50vw + var(--card-width) / 2), calc(var(--card-y) - 50vh + var(--card-height) / 2)) scale(0.2);
-                        opacity: 0;
-                      }
-                    }
-                    .fade-in { 
-                      animation: fadeIn 400ms ease-out forwards; 
-                    }
-                    .fade-out { 
-                      animation: fadeOut 400ms ease-in forwards; 
-                    }
-                    .modal-scale-in { 
-                      animation: modalScaleIn 400ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards; 
-                    }
-                    .modal-scale-out { 
-                      animation: modalScaleOut 400ms cubic-bezier(0.36, 0, 0.66, -0.56) forwards; 
-                    }
-            
-                    /* Custom Scrollbar for Modal - Subtle & Clean */
-                    .modal-scale-in::-webkit-scrollbar,
-                    .modal-scale-out::-webkit-scrollbar {
-                      width: 4px;
-                    }
-            
-                    .modal-scale-in::-webkit-scrollbar-track,
-                    .modal-scale-out::-webkit-scrollbar-track {
-                      background: transparent;
-                      border-radius: 2px;
-                    }
-            
-                    .modal-scale-in::-webkit-scrollbar-thumb,
-                    .modal-scale-out::-webkit-scrollbar-thumb {
-                      background: rgba(255, 215, 0, 0.2);
-                      border-radius: 2px;
-                      transition: background 0.3s ease;
-                    }
-            
-                    .modal-scale-in::-webkit-scrollbar-thumb:hover,
-                    .modal-scale-out::-webkit-scrollbar-thumb:hover {
-                      background: rgba(255, 215, 0, 0.4);
-                    }
-            
-                    /* Remove scrollbar arrow buttons */
-                    .modal-scale-in::-webkit-scrollbar-button,
-                    .modal-scale-out::-webkit-scrollbar-button {
-                      display: none;
-                      width: 0;
-                      height: 0;
-                    }
-            
-                    /* Firefox scrollbar */
-                    .modal-scale-in,
-                    .modal-scale-out {
-                      scrollbar-width: thin;
-                      scrollbar-color: rgba(255, 215, 0, 0.2) transparent;
-                    }
-                    
-                    /* Text utilities */
-                    .line-clamp-2 {
-                      display: -webkit-box;
-                      -webkit-line-clamp: 2;
-                      -webkit-box-orient: vertical;
-                      overflow: hidden;
-                    }
-                    
-                    .line-clamp-3 {
-                      display: -webkit-box;
-                      -webkit-line-clamp: 3;
-                      -webkit-box-orient: vertical;
-                      overflow: hidden;
-                    }
-                  `}</style>
+      {/* Enhanced CSS with Smooth Animations */}
+      <style jsx global>{`
+        /* Section visibility */
+        #events {
+          opacity: 0;
+          transform: translateY(30px);
+          transition: opacity 1s ease, transform 1s ease;
+        }
+        
+        #events.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        /* Title simple fade up */
+        @keyframes fadeUp {
+          0% { 
+            opacity: 0; 
+            transform: translateY(20px); 
+          }
+          100% { 
+            opacity: 1; 
+            transform: translateY(0); 
+          }
+        }
+
+        .events-title.animate-fade-up {
+          animation: fadeUp 0.8s ease-out forwards;
+        }
+
+        /* Professional typewriter effect for subtitle */
+        @keyframes typewriter {
+          0% { width: 0; }
+          100% { width: 100%; }
+        }
+
+        @keyframes blinkCursor {
+          0%, 50% { border-right: 3px solid #ffd700; }
+          51%, 100% { border-right: 3px solid transparent; }
+        }
+
+        /* Subtitle typewriter effect */
+        .events-subtitle span {
+          display: inline-block;
+          overflow: hidden;
+          white-space: nowrap;
+          width: 0;
+          border-right: 3px solid transparent;
+        }
+
+        .events-subtitle.animate-typewriter span {
+          animation: typewriter 2s steps(60) forwards, blinkCursor 0.75s infinite;
+        }
+
+        /* Professional card fade-up animation */
+        @keyframes cardFadeUp {
+          0% { 
+            opacity: 0; 
+            transform: translateY(40px) scale(0.95); 
+          }
+          100% { 
+            opacity: 1; 
+            transform: translateY(0) scale(1); 
+          }
+        }
+
+        /* Event cards base state - stay visible once animated */
+        .event-card {
+          opacity: 0;
+          transform: translateY(40px) scale(0.95);
+          transition: none;
+        }
+
+        .event-cards-wrapper [class*='grid'] > div {
+          opacity: 0;
+          transform: translateY(40px) scale(0.95);
+          transition: none;
+        }
+
+        /* Professional card animation - maintains visibility */
+        .event-card.animate-card-fade-up,
+        .event-cards-wrapper [class*='grid'] > div.animate-card-fade-up {
+          animation: cardFadeUp 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+          /* Keep cards visible after animation */
+          animation-fill-mode: forwards;
+        }
+
+        /* Enhanced Modal Animations from events page */
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes fadeOut {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+        @keyframes modalScaleIn {
+          0% {
+            transform: translate(calc(var(--card-x) - 50vw + var(--card-width) / 2), calc(var(--card-y) - 50vh + var(--card-height) / 2)) scale(0.2);
+            opacity: 0;
+          }
+          100% {
+            transform: translate(0, 0) scale(1);
+            opacity: 1;
+          }
+        }
+        @keyframes modalScaleOut {
+          0% {
+            transform: translate(0, 0) scale(1);
+            opacity: 1;
+          }
+          100% {
+            transform: translate(calc(var(--card-x) - 50vw + var(--card-width) / 2), calc(var(--card-y) - 50vh + var(--card-height) / 2)) scale(0.2);
+            opacity: 0;
+          }
+        }
+        .fade-in { 
+          animation: fadeIn 400ms ease-out forwards; 
+        }
+        .fade-out { 
+          animation: fadeOut 400ms ease-in forwards; 
+        }
+        .modal-scale-in { 
+          animation: modalScaleIn 400ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards; 
+        }
+        .modal-scale-out { 
+          animation: modalScaleOut 400ms cubic-bezier(0.36, 0, 0.66, -0.56) forwards; 
+        }
+
+        /* Custom Scrollbar for Modal - Subtle & Clean */
+        .modal-scale-in::-webkit-scrollbar,
+        .modal-scale-out::-webkit-scrollbar {
+          width: 4px;
+        }
+
+        .modal-scale-in::-webkit-scrollbar-track,
+        .modal-scale-out::-webkit-scrollbar-track {
+          background: transparent;
+          border-radius: 2px;
+        }
+
+        .modal-scale-in::-webkit-scrollbar-thumb,
+        .modal-scale-out::-webkit-scrollbar-thumb {
+          background: rgba(255, 215, 0, 0.2);
+          border-radius: 2px;
+          transition: background 0.3s ease;
+        }
+
+        .modal-scale-in::-webkit-scrollbar-thumb:hover,
+        .modal-scale-out::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 215, 0, 0.4);
+        }
+
+        /* Remove scrollbar arrow buttons */
+        .modal-scale-in::-webkit-scrollbar-button,
+        .modal-scale-out::-webkit-scrollbar-button {
+          display: none;
+          width: 0;
+          height: 0;
+        }
+
+        /* Firefox scrollbar */
+        .modal-scale-in,
+        .modal-scale-out {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(255, 215, 0, 0.2) transparent;
+        }
+        
+        /* Text utilities */
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        
+        .line-clamp-3 {
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+      `}</style>
     </>
   );
 }
