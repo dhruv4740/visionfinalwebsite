@@ -12,7 +12,13 @@ export default function EventsAdmin() {
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
   const router = useRouter();
   
-  // Enhanced event form data
+  // Tab and registration states
+  const [activeTab, setActiveTab] = useState('events');
+  const [registrations, setRegistrations] = useState([]);
+  const [registrationsLoading, setRegistrationsLoading] = useState(false);
+  const [selectedEventForRegistrations, setSelectedEventForRegistrations] = useState('all');
+
+  // Event form
   const initialEventForm = {
     title: '',
     date: '',
@@ -20,29 +26,16 @@ export default function EventsAdmin() {
     location: '',
     description: '',
     image: '',
-    registrationLink: '',
-    registrationCutoffDate: '',
-    category: '',
-    maxAttendees: '',
-    isOnline: false,
-    meetingLink: '',
-    prerequisites: '',
-    contactEmail: '',
-    tags: '',
     eventType: 'workshop',
-    duration: '',
+    maxAttendees: '',
     price: '',
-    organizer: ''
+    tags: ''
   };
   
   const [eventForm, setEventForm] = useState(initialEventForm);
-  const [submitStatus, setSubmitStatus] = useState({ 
-    loading: false, 
-    success: false, 
-    error: null 
-  });
+  const [submitStatus, setSubmitStatus] = useState({ loading: false, success: false, error: null });
 
-  // Check authentication
+  // Check authentication and fetch data
   useEffect(() => {
     const isAuth = localStorage.getItem('vision_admin_auth') === 'true';
     if (!isAuth) {
@@ -50,6 +43,7 @@ export default function EventsAdmin() {
     } else {
       setAuthenticated(true);
       fetchEvents();
+      fetchRegistrations();
     }
   }, [router]);
   
@@ -57,17 +51,28 @@ export default function EventsAdmin() {
     try {
       setLoading(true);
       const response = await fetch('/api/admin/events');
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch events');
-      }
-      
+      if (!response.ok) throw new Error('Failed to fetch events');
       const data = await response.json();
       setEvents(data);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchRegistrations = async () => {
+    try {
+      setRegistrationsLoading(true);
+      const response = await fetch('/api/events/register');
+      if (!response.ok) throw new Error('Failed to fetch registrations');
+      const data = await response.json();
+      setRegistrations(data.registrations || []);
+    } catch (err) {
+      console.error('Error fetching registrations:', err);
+      setError('Failed to fetch registrations');
+    } finally {
+      setRegistrationsLoading(false);
     }
   };
   
@@ -86,19 +91,10 @@ export default function EventsAdmin() {
       location: event.location,
       description: event.description,
       image: event.image || '',
-      registrationLink: event.registrationLink || '',
-      registrationCutoffDate: event.registrationCutoffDate || '',
-      category: event.category || '',
-      maxAttendees: event.maxAttendees || '',
-      isOnline: event.isOnline || false,
-      meetingLink: event.meetingLink || '',
-      prerequisites: event.prerequisites || '',
-      contactEmail: event.contactEmail || '',
-      tags: event.tags || '',
       eventType: event.eventType || 'workshop',
-      duration: event.duration || '',
+      maxAttendees: event.maxAttendees || '',
       price: event.price || '',
-      organizer: event.organizer || ''
+      tags: event.tags || ''
     });
     setIsModalOpen(true);
   };
@@ -113,11 +109,8 @@ export default function EventsAdmin() {
   };
   
   const handleFormChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setEventForm(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
+    const { name, value } = e.target;
+    setEventForm(prev => ({ ...prev, [name]: value }));
   };
   
   const handleSubmit = async (e) => {
@@ -127,16 +120,11 @@ export default function EventsAdmin() {
     try {
       const url = '/api/admin/events';
       const method = selectedEvent ? 'PATCH' : 'POST';
-      
-      const payload = selectedEvent 
-        ? { id: selectedEvent.id, ...eventForm }
-        : eventForm;
+      const payload = selectedEvent ? { id: selectedEvent.id, ...eventForm } : eventForm;
       
       const response = await fetch(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
       
@@ -146,70 +134,44 @@ export default function EventsAdmin() {
       }
       
       setSubmitStatus({ loading: false, success: true, error: null });
-      
-      // Refresh the events list
       fetchEvents();
-      
-      // Close the modal after a delay
-      setTimeout(() => {
-        closeModal();
-      }, 1000);
+      setTimeout(closeModal, 1000);
       
     } catch (err) {
-      console.error('Error saving event:', err);
       setSubmitStatus({ loading: false, success: false, error: err.message });
     }
   };
   
-  const openDeleteConfirmation = (event) => {
-    setSelectedEvent(event);
-    setIsConfirmDeleteOpen(true);
-  };
-  
-  const closeDeleteConfirmation = () => {
-    setIsConfirmDeleteOpen(false);
-    setTimeout(() => {
-      setSelectedEvent(null);
-    }, 300);
-  };
-  
   const handleDeleteEvent = async () => {
     try {
-      const response = await fetch(`/api/admin/events?id=${selectedEvent.id}`, {
-        method: 'DELETE'
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to delete event');
-      }
-      
-      // Refresh the events list
+      const response = await fetch(`/api/admin/events?id=${selectedEvent.id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error('Failed to delete event');
       fetchEvents();
-      closeDeleteConfirmation();
-      
+      setIsConfirmDeleteOpen(false);
     } catch (err) {
-      console.error('Error deleting event:', err);
       alert('Failed to delete event: ' + err.message);
     }
   };
   
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric'
+      year: 'numeric', month: 'long', day: 'numeric'
     });
   };
 
-  // Check if registration is still open
-  const isRegistrationOpen = (event) => {
-    if (!event.registrationCutoffDate) return true; // No cutoff date set
-    const cutoffDate = new Date(event.registrationCutoffDate);
-    const now = new Date();
-    return now <= cutoffDate;
+  // Get registrations for a specific event
+  const getEventRegistrations = (eventId) => {
+    return registrations.filter(reg => reg.eventId === eventId);
   };
-  
+
+  // Get filtered registrations based on selected event
+  const getFilteredRegistrations = () => {
+    if (selectedEventForRegistrations === 'all') {
+      return registrations;
+    }
+    return registrations.filter(reg => reg.eventId === selectedEventForRegistrations);
+  };
+
   if (!authenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black px-4">
@@ -218,233 +180,336 @@ export default function EventsAdmin() {
     );
   }
   
-  // Group events by month
-  const eventsByMonth = events.reduce((acc, event) => {
-    const date = new Date(event.date);
-    const month = date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
-    
-    if (!acc[month]) {
-      acc[month] = [];
-    }
-    
-    acc[month].push(event);
-    return acc;
-  }, {});
-  
   return (
     <div className="min-h-screen bg-black py-12 px-4">
       <div className="max-w-7xl mx-auto">
+        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
           <div className="flex items-center mb-4 md:mb-0">
             <button
               onClick={() => router.push('/admin')}
-              className="mr-4 p-2 rounded-md"
-              style={{ backgroundColor: 'rgba(255, 215, 0, 0.1)', color: '#FFD700' }}
+              className="mr-4 p-2 rounded-md bg-gold/10 text-gold hover:bg-gold/20 transition-colors"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
             </button>
-            <h1 className="text-3xl font-bold" style={{ color: '#FFD700' }}>Events Management</h1>
+            <h1 className="text-3xl font-bold text-gold">Events Management</h1>
           </div>
           
           <div className="flex space-x-2">
-            <button
-              onClick={openCreateModal}
-              className="px-4 py-2 rounded-md text-sm"
-              style={{ backgroundColor: '#FFD700', color: 'black' }}
-            >
-              Create New Event
-            </button>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-4 py-2 rounded-md text-sm bg-gray-800 text-white"
-            >
+            {activeTab === 'events' && (
+              <button onClick={openCreateModal} className="px-4 py-2 rounded-md text-sm bg-gold text-black hover:bg-gold/90 transition-colors">
+                Create New Event
+              </button>
+            )}
+            <button onClick={() => {fetchEvents(); fetchRegistrations();}} className="px-4 py-2 rounded-md text-sm bg-gray-800 text-white hover:bg-gray-700 transition-colors">
               Refresh
             </button>
           </div>
         </div>
-        
-        {/* Events Stats Section */}
-        <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-lg border" style={{ borderColor: 'rgba(255, 215, 0, 0.3)', backgroundColor: '#0A0A0A' }}>
-            <p className="text-sm text-gray-400">Total Events</p>
-            <p className="text-2xl font-bold" style={{ color: '#FFD700' }}>{events.length}</p>
-          </div>
-          
-          <div className="p-4 rounded-lg border" style={{ borderColor: 'rgba(255, 215, 0, 0.3)', backgroundColor: '#0A0A0A' }}>
-            <p className="text-sm text-gray-400">Upcoming Events</p>
-            <p className="text-2xl font-bold" style={{ color: '#FFD700' }}>
-              {events.filter(event => new Date(event.date) >= new Date()).length}
-            </p>
-          </div>
-          
-          <div className="p-4 rounded-lg border" style={{ borderColor: 'rgba(255, 215, 0, 0.3)', backgroundColor: '#0A0A0A' }}>
-            <p className="text-sm text-gray-400">Open Registration</p>
-            <p className="text-2xl font-bold" style={{ color: '#FFD700' }}>
-              {events.filter(event => isRegistrationOpen(event) && new Date(event.date) >= new Date()).length}
-            </p>
+
+        {/* Tab Navigation */}
+        <div className="mb-8">
+          <div className="flex space-x-1 bg-gray-900/50 rounded-lg p-1 border border-gold/30">
+            <button
+              onClick={() => setActiveTab('events')}
+              className={`flex-1 px-6 py-3 rounded-md font-medium transition-all duration-300 ${
+                activeTab === 'events' ? 'bg-gold text-black' : 'text-gray-300 hover:text-white hover:bg-gray-800/50'
+              }`}
+            >
+              <span className="flex items-center justify-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Events Management
+              </span>
+            </button>
+            <button
+              onClick={() => setActiveTab('registrations')}
+              className={`flex-1 px-6 py-3 rounded-md font-medium transition-all duration-300 ${
+                activeTab === 'registrations' ? 'bg-gold text-black' : 'text-gray-300 hover:text-white hover:bg-gray-800/50'
+              }`}
+            >
+              <span className="flex items-center justify-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Event Registrations
+                {registrations.length > 0 && (
+                  <span className="px-2 py-1 text-xs rounded-full bg-gray-700 text-gray-300">
+                    {registrations.length}
+                  </span>
+                )}
+              </span>
+            </button>
           </div>
         </div>
         
-        {/* Events List */}
+        {/* Stats Section */}
+        <div className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="p-4 rounded-lg border border-gold/30 bg-gradient-to-br from-gold/5 to-transparent">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-400">Total Events</p>
+                <p className="text-2xl font-bold text-gold">{events.length}</p>
+              </div>
+              <div className="text-gold/60">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div className="p-4 rounded-lg border border-emerald-500/30 bg-gradient-to-br from-emerald-500/5 to-transparent">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-400">Upcoming Events</p>
+                <p className="text-2xl font-bold text-emerald-400">
+                  {events.filter(event => new Date(event.date) >= new Date()).length}
+                </p>
+              </div>
+              <div className="text-emerald-400/60">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div className="p-4 rounded-lg border border-blue-500/30 bg-gradient-to-br from-blue-500/5 to-transparent">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-400">Total Registrations</p>
+                <p className="text-2xl font-bold text-blue-400">{registrations.length}</p>
+              </div>
+              <div className="text-blue-400/60">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div className="p-4 rounded-lg border border-purple-500/30 bg-gradient-to-br from-purple-500/5 to-transparent">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-400">Events with Registrations</p>
+                <p className="text-2xl font-bold text-purple-400">
+                  {events.filter(event => getEventRegistrations(event.id || event._id).length > 0).length}
+                </p>
+              </div>
+              <div className="text-purple-400/60">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Error Display */}
         {error && (
-          <div className="mb-6 bg-red-900 bg-opacity-20 border border-red-500 text-red-300 px-4 py-3 rounded">
-            {error}
+          <div className="mb-6 bg-red-900/20 border border-red-500 text-red-300 px-4 py-3 rounded-lg">
+            <div className="flex items-center">
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {error}
+            </div>
           </div>
         )}
-        
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2" style={{ borderColor: '#FFD700' }}></div>
-          </div>
-        ) : events.length === 0 ? (
-          <div className="p-8 text-center border rounded-lg" style={{ borderColor: 'rgba(255, 215, 0, 0.3)', backgroundColor: '#0A0A0A' }}>
-            <p className="text-gray-400 text-lg mb-4">No events have been created yet</p>
-            <button
-              onClick={openCreateModal}
-              className="px-4 py-2 rounded-md text-sm"
-              style={{ backgroundColor: '#FFD700', color: 'black' }}
-            >
-              Create Your First Event
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-8">
-            {Object.entries(eventsByMonth).map(([month, monthEvents]) => (
-              <div key={month} className="border rounded-lg p-6" style={{ borderColor: 'rgba(255, 215, 0, 0.3)', backgroundColor: '#0A0A0A' }}>
-                <h2 className="text-xl font-semibold mb-4" style={{ color: '#FFD700' }}>{month}</h2>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {monthEvents.map((event) => (
-                    <div 
-                      key={event.id} 
-                      className="border rounded-lg overflow-hidden relative"
-                      style={{ borderColor: 'rgba(255, 215, 0, 0.3)', backgroundColor: '#111' }}
-                    >
-                      {/* Event content */}
-                      <div className="p-4">
-                        <div className="flex justify-between items-start mb-3">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h3 className="text-lg font-medium" style={{ color: '#FFD700' }}>{event.title}</h3>
-                              {event.eventType && (
-                                <span className="px-2 py-1 text-xs rounded-full bg-gray-800 text-gray-300">
-                                  {event.eventType}
-                                </span>
-                              )}
-                              {event.isOnline && (
-                                <span className="px-2 py-1 text-xs rounded-full bg-blue-900 text-blue-300">
-                                  Online
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-sm text-gray-300">{formatDate(event.date)} • {event.time}</p>
-                            <p className="text-sm text-gray-300">{event.location}</p>
-                            {event.duration && (
-                              <p className="text-sm text-gray-400">Duration: {event.duration}</p>
-                            )}
-                            {event.maxAttendees && (
-                              <p className="text-sm text-gray-400">Max Attendees: {event.maxAttendees}</p>
-                            )}
-                          </div>
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => openEditModal(event)}
-                              className="p-1.5 rounded bg-gray-800 hover:bg-gray-700"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                              </svg>
-                            </button>
-                            <button
-                              onClick={() => openDeleteConfirmation(event)}
-                              className="p-1.5 rounded bg-red-900 hover:bg-red-800"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                            </button>
-                          </div>
-                        </div>
-                        
-                        <div className="mb-3">
-                          <p className="text-gray-300 text-sm line-clamp-2">
-                            {event.description}
-                          </p>
-                        </div>
 
-                        {/* Registration Section */}
-                        {event.registrationLink && (
-                          <div className="mb-3">
-                            {isRegistrationOpen(event) ? (
-                              <a 
-                                href={event.registrationLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-sm font-medium hover:underline inline-flex items-center"
-                                style={{ color: '#FFD700' }}
-                              >
-                                Registration Open
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                </svg>
-                              </a>
-                            ) : (
-                              <span className="text-sm font-medium text-red-400">
-                                Registration Closed
-                              </span>
-                            )}
-                            {event.registrationCutoffDate && (
-                              <p className="text-xs text-gray-500 mt-1">
-                                Registration {isRegistrationOpen(event) ? 'closes' : 'closed'}: {formatDate(event.registrationCutoffDate)}
-                              </p>
-                            )}
-                          </div>
-                        )}
-
-                        {/* Additional Info */}
-                        {event.tags && (
-                          <div className="flex flex-wrap gap-1 mb-2">
-                            {event.tags.split(',').map((tag, index) => (
-                              <span key={index} className="px-2 py-1 text-xs rounded bg-gray-800 text-gray-300">
-                                {tag.trim()}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
-                        {event.price && (
-                          <p className="text-sm font-medium" style={{ color: '#FFD700' }}>
-                            {event.price === '0' || event.price.toLowerCase() === 'free' ? 'Free Event' : `₹${event.price}`}
-                          </p>
-                        )}
+        {/* Content based on active tab */}
+        {activeTab === 'events' ? (
+          // Events Management Tab
+          loading ? (
+            <div className="flex justify-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gold"></div>
+            </div>
+          ) : events.length === 0 ? (
+            <div className="p-12 text-center border rounded-lg border-gold/30 bg-black/80">
+              <div className="text-6xl mb-4">📅</div>
+              <p className="text-gray-400 text-lg mb-4">No events have been created yet</p>
+              <button onClick={openCreateModal} className="px-6 py-3 rounded-lg text-sm bg-gold text-black hover:bg-gold/90 transition-colors">
+                Create Your First Event
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {events.map((event) => (
+                <div key={event.id} className="border rounded-lg p-6 border-gold/30 bg-black/80 hover:border-gold/50 transition-all duration-300">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-medium text-gold mb-2">{event.title}</h3>
+                      <p className="text-sm text-gray-300 flex items-center mb-1">
+                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        {formatDate(event.date)} • {event.time}
+                      </p>
+                      <p className="text-sm text-gray-300 flex items-center mb-2">
+                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        {event.location}
+                      </p>
+                      {/* Registration count with better styling */}
+                      <div className="flex items-center">
+                        <span className={`px-2 py-1 text-xs rounded-full font-semibold ${
+                          getEventRegistrations(event.id || event._id).length > 0 
+                            ? 'bg-green-500/20 text-green-400 border border-green-500/50' 
+                            : 'bg-gray-700/50 text-gray-400 border border-gray-600/50'
+                        }`}>
+                          <svg className="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                          </svg>
+                          {getEventRegistrations(event.id || event._id).length} registrations
+                        </span>
                       </div>
                     </div>
-                  ))}
+                    <div className="flex space-x-2">
+                      <button 
+                        onClick={() => openEditModal(event)} 
+                        className="p-2 rounded bg-gray-800 hover:bg-gray-700 transition-colors"
+                        title="Edit Event"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button 
+                        onClick={() => { setSelectedEvent(event); setIsConfirmDeleteOpen(true); }} 
+                        className="p-2 rounded bg-red-900 hover:bg-red-800 transition-colors"
+                        title="Delete Event"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-gray-300 text-sm line-clamp-2 mb-3">{event.description}</p>
+                  {event.tags && (
+                    <div className="flex flex-wrap gap-1">
+                      {event.tags.split(',').map((tag, index) => (
+                        <span key={index} className="px-2 py-1 text-xs rounded bg-gray-800 text-gray-300">
+                          {tag.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )
+        ) : (
+          // Improved Registrations Tab
+          <div>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gold mb-4 md:mb-0">Event Registrations</h2>
+              
+              {/* Event Filter Dropdown */}
+              <div className="flex items-center space-x-4">
+                <label className="text-sm font-medium text-gray-300">Filter by Event:</label>
+                <select
+                  value={selectedEventForRegistrations}
+                  onChange={(e) => setSelectedEventForRegistrations(e.target.value)}
+                  className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-gold focus:outline-none"
+                >
+                  <option value="all">All Events ({registrations.length})</option>
+                  {events.map(event => {
+                    const eventRegs = getEventRegistrations(event.id || event._id);
+                    return (
+                      <option key={event.id} value={event.id || event._id}>
+                        {event.title} ({eventRegs.length})
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+            </div>
+
+            {registrationsLoading ? (
+              <div className="flex justify-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gold"></div>
+              </div>
+            ) : getFilteredRegistrations().length === 0 ? (
+              <div className="p-12 text-center border rounded-lg border-gold/30 bg-black/80">
+                <div className="text-6xl mb-4">👥</div>
+                <p className="text-gray-400 text-lg">
+                  {selectedEventForRegistrations === 'all' 
+                    ? 'No registrations yet' 
+                    : 'No registrations for this event'
+                  }
+                </p>
+                <p className="text-gray-500 text-sm mt-2">Registrations will appear here when users register for events</p>
+              </div>
+            ) : (
+              <div className="border rounded-lg border-gold/30 bg-black/80 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-900/50">
+                      <tr>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Name</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Event</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Email</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Phone</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Year</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Branch</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Registered</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-800">
+                      {getFilteredRegistrations().map((reg, index) => (
+                        <tr key={index} className="hover:bg-gray-900/30 transition-colors">
+                          <td className="px-6 py-4 text-sm">
+                            <div className="font-medium text-white">{reg.name}</div>
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            <div className="text-gold font-medium">{reg.eventTitle}</div>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-300">{reg.email}</td>
+                          <td className="px-6 py-4 text-sm text-gray-300">{reg.phone}</td>
+                          <td className="px-6 py-4 text-sm">
+                            <span className="px-2 py-1 text-xs rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/50">
+                              {reg.year}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            <span className="px-2 py-1 text-xs rounded-full bg-purple-500/20 text-purple-400 border border-purple-500/50">
+                              {reg.branch}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-400">
+                            {new Date(reg.timestamp).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>
       
       {/* Create/Edit Event Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-          <div 
-            className="bg-black w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-lg border"
-            style={{ borderColor: 'rgba(255, 215, 0, 0.3)' }}
-          >
-            <div className="p-6 border-b" style={{ borderColor: 'rgba(255, 215, 0, 0.3)' }}>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-black w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-lg border border-gold/30">
+            <div className="p-6 border-b border-gold/30">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold" style={{ color: '#FFD700' }}>
+                <h2 className="text-2xl font-bold text-gold">
                   {selectedEvent ? 'Edit Event' : 'Create New Event'}
                 </h2>
-                <button 
-                  onClick={closeModal}
-                  className="text-gray-400 hover:text-white"
-                >
+                <button onClick={closeModal} className="text-gray-400 hover:text-white">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -452,32 +517,26 @@ export default function EventsAdmin() {
               </div>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-6 space-y-6">
-              {/* Basic Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-1">Event Title *</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Event Title *</label>
                   <input
                     type="text"
-                    id="title"
                     name="title"
                     value={eventForm.title}
                     onChange={handleFormChange}
-                    className="w-full px-4 py-2 rounded-md focus:outline-none"
-                    style={{ backgroundColor: '#222', color: 'white', borderColor: 'rgba(255, 215, 0, 0.3)', border: '1px solid' }}
+                    className="w-full px-4 py-2 rounded-md bg-gray-800 text-white border border-gold/30 focus:outline-none"
                     required
                   />
                 </div>
-
                 <div>
-                  <label htmlFor="eventType" className="block text-sm font-medium text-gray-300 mb-1">Event Type *</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Event Type *</label>
                   <select
-                    id="eventType"
                     name="eventType"
                     value={eventForm.eventType}
                     onChange={handleFormChange}
-                    className="w-full px-4 py-2 rounded-md focus:outline-none"
-                    style={{ backgroundColor: '#222', color: 'white', borderColor: 'rgba(255, 215, 0, 0.3)', border: '1px solid' }}
+                    className="w-full px-4 py-2 rounded-md bg-gray-800 text-white border border-gold/30 focus:outline-none"
                     required
                   >
                     <option value="workshop">Workshop</option>
@@ -486,291 +545,128 @@ export default function EventsAdmin() {
                     <option value="conference">Conference</option>
                     <option value="meetup">Meetup</option>
                     <option value="competition">Competition</option>
-                    <option value="demo">Demo Day</option>
                   </select>
                 </div>
               </div>
               
-              {/* Date and Time */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label htmlFor="date" className="block text-sm font-medium text-gray-300 mb-1">Date *</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Date *</label>
                   <input
                     type="date"
-                    id="date"
                     name="date"
                     value={eventForm.date}
                     onChange={handleFormChange}
-                    className="w-full px-4 py-2 rounded-md focus:outline-none"
-                    style={{ backgroundColor: '#222', color: 'white', borderColor: 'rgba(255, 215, 0, 0.3)', border: '1px solid' }}
+                    className="w-full px-4 py-2 rounded-md bg-gray-800 text-white border border-gold/30 focus:outline-none"
                     required
                   />
                 </div>
-                
                 <div>
-                  <label htmlFor="time" className="block text-sm font-medium text-gray-300 mb-1">Time *</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Time *</label>
                   <input
                     type="text"
-                    id="time"
                     name="time"
                     value={eventForm.time}
                     onChange={handleFormChange}
                     placeholder="e.g., 3:00 PM - 5:00 PM"
-                    className="w-full px-4 py-2 rounded-md focus:outline-none"
-                    style={{ backgroundColor: '#222', color: 'white', borderColor: 'rgba(255, 215, 0, 0.3)', border: '1px solid' }}
+                    className="w-full px-4 py-2 rounded-md bg-gray-800 text-white border border-gold/30 focus:outline-none"
                     required
                   />
                 </div>
-
                 <div>
-                  <label htmlFor="duration" className="block text-sm font-medium text-gray-300 mb-1">Duration</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Max Attendees</label>
                   <input
-                    type="text"
-                    id="duration"
-                    name="duration"
-                    value={eventForm.duration}
+                    type="number"
+                    name="maxAttendees"
+                    value={eventForm.maxAttendees}
                     onChange={handleFormChange}
-                    placeholder="e.g., 2 hours, 3 days"
-                    className="w-full px-4 py-2 rounded-md focus:outline-none"
-                    style={{ backgroundColor: '#222', color: 'white', borderColor: 'rgba(255, 215, 0, 0.3)', border: '1px solid' }}
+                    className="w-full px-4 py-2 rounded-md bg-gray-800 text-white border border-gold/30 focus:outline-none"
                   />
                 </div>
               </div>
 
-              {/* Location and Online */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="location" className="block text-sm font-medium text-gray-300 mb-1">Location *</label>
-                  <input
-                    type="text"
-                    id="location"
-                    name="location"
-                    value={eventForm.location}
-                    onChange={handleFormChange}
-                    placeholder="e.g., Room 301, Engineering Building"
-                    className="w-full px-4 py-2 rounded-md focus:outline-none"
-                    style={{ backgroundColor: '#222', color: 'white', borderColor: 'rgba(255, 215, 0, 0.3)', border: '1px solid' }}
-                    required
-                  />
-                </div>
-
-                <div className="flex items-center space-x-4 pt-6">
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="isOnline"
-                      checked={eventForm.isOnline}
-                      onChange={handleFormChange}
-                      className="mr-2"
-                    />
-                    <span className="text-gray-300">Online Event</span>
-                  </label>
-                </div>
-              </div>
-
-              {/* Meeting Link for Online Events */}
-              {eventForm.isOnline && (
-                <div>
-                  <label htmlFor="meetingLink" className="block text-sm font-medium text-gray-300 mb-1">Meeting Link</label>
-                  <input
-                    type="url"
-                    id="meetingLink"
-                    name="meetingLink"
-                    value={eventForm.meetingLink}
-                    onChange={handleFormChange}
-                    placeholder="https://meet.google.com/xxx-xxxx-xxx"
-                    className="w-full px-4 py-2 rounded-md focus:outline-none"
-                    style={{ backgroundColor: '#222', color: 'white', borderColor: 'rgba(255, 215, 0, 0.3)', border: '1px solid' }}
-                  />
-                </div>
-              )}
-              
-              {/* Description */}
               <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-1">Description *</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Location *</label>
+                <input
+                  type="text"
+                  name="location"
+                  value={eventForm.location}
+                  onChange={handleFormChange}
+                  className="w-full px-4 py-2 rounded-md bg-gray-800 text-white border border-gold/30 focus:outline-none"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Description *</label>
                 <textarea
-                  id="description"
                   name="description"
                   value={eventForm.description}
                   onChange={handleFormChange}
                   rows={4}
-                  className="w-full px-4 py-2 rounded-md focus:outline-none"
-                  style={{ backgroundColor: '#222', color: 'white', borderColor: 'rgba(255, 215, 0, 0.3)', border: '1px solid' }}
+                  className="w-full px-4 py-2 rounded-md bg-gray-800 text-white border border-gold/30 focus:outline-none"
                   required
                 ></textarea>
               </div>
 
-              {/* Registration Details */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="registrationLink" className="block text-sm font-medium text-gray-300 mb-1">Registration Link</label>
-                  <input
-                    type="url"
-                    id="registrationLink"
-                    name="registrationLink"
-                    value={eventForm.registrationLink}
-                    onChange={handleFormChange}
-                    placeholder="https://example.com/register"
-                    className="w-full px-4 py-2 rounded-md focus:outline-none"
-                    style={{ backgroundColor: '#222', color: 'white', borderColor: 'rgba(255, 215, 0, 0.3)', border: '1px solid' }}
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="registrationCutoffDate" className="block text-sm font-medium text-gray-300 mb-1">Registration Cutoff Date</label>
-                  <input
-                    type="date"
-                    id="registrationCutoffDate"
-                    name="registrationCutoffDate"
-                    value={eventForm.registrationCutoffDate}
-                    onChange={handleFormChange}
-                    className="w-full px-4 py-2 rounded-md focus:outline-none"
-                    style={{ backgroundColor: '#222', color: 'white', borderColor: 'rgba(255, 215, 0, 0.3)', border: '1px solid' }}
-                  />
-                  <p className="text-xs text-gray-400 mt-1">Registration will be hidden after this date</p>
-                </div>
-              </div>
-
-              {/* Capacity and Pricing */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="maxAttendees" className="block text-sm font-medium text-gray-300 mb-1">Max Attendees</label>
-                  <input
-                    type="number"
-                    id="maxAttendees"
-                    name="maxAttendees"
-                    value={eventForm.maxAttendees}
-                    onChange={handleFormChange}
-                    placeholder="e.g., 50"
-                    className="w-full px-4 py-2 rounded-md focus:outline-none"
-                    style={{ backgroundColor: '#222', color: 'white', borderColor: 'rgba(255, 215, 0, 0.3)', border: '1px solid' }}
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="price" className="block text-sm font-medium text-gray-300 mb-1">Price</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Price</label>
                   <input
                     type="text"
-                    id="price"
                     name="price"
                     value={eventForm.price}
                     onChange={handleFormChange}
                     placeholder="Free, 100, 500"
-                    className="w-full px-4 py-2 rounded-md focus:outline-none"
-                    style={{ backgroundColor: '#222', color: 'white', borderColor: 'rgba(255, 215, 0, 0.3)', border: '1px solid' }}
+                    className="w-full px-4 py-2 rounded-md bg-gray-800 text-white border border-gold/30 focus:outline-none"
                   />
-                  <p className="text-xs text-gray-400 mt-1">Enter 'Free' or amount in rupees</p>
                 </div>
-              </div>
-
-              {/* Organizer and Contact */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="organizer" className="block text-sm font-medium text-gray-300 mb-1">Organizer</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Tags</label>
                   <input
                     type="text"
-                    id="organizer"
-                    name="organizer"
-                    value={eventForm.organizer}
+                    name="tags"
+                    value={eventForm.tags}
                     onChange={handleFormChange}
-                    placeholder="Team Vision AR/VR"
-                    className="w-full px-4 py-2 rounded-md focus:outline-none"
-                    style={{ backgroundColor: '#222', color: 'white', borderColor: 'rgba(255, 215, 0, 0.3)', border: '1px solid' }}
+                    placeholder="AR, VR, Unity (comma separated)"
+                    className="w-full px-4 py-2 rounded-md bg-gray-800 text-white border border-gold/30 focus:outline-none"
                   />
                 </div>
-
-                <div>
-                  <label htmlFor="contactEmail" className="block text-sm font-medium text-gray-300 mb-1">Contact Email</label>
-                  <input
-                    type="email"
-                    id="contactEmail"
-                    name="contactEmail"
-                    value={eventForm.contactEmail}
-                    onChange={handleFormChange}
-                    placeholder="events@teamvision.edu"
-                    className="w-full px-4 py-2 rounded-md focus:outline-none"
-                    style={{ backgroundColor: '#222', color: 'white', borderColor: 'rgba(255, 215, 0, 0.3)', border: '1px solid' }}
-                  />
-                </div>
-              </div>
-
-              {/* Prerequisites and Tags */}
-              <div>
-                <label htmlFor="prerequisites" className="block text-sm font-medium text-gray-300 mb-1">Prerequisites</label>
-                <textarea
-                  id="prerequisites"
-                  name="prerequisites"
-                  value={eventForm.prerequisites}
-                  onChange={handleFormChange}
-                  rows={2}
-                  placeholder="Basic programming knowledge, Unity experience preferred"
-                  className="w-full px-4 py-2 rounded-md focus:outline-none"
-                  style={{ backgroundColor: '#222', color: 'white', borderColor: 'rgba(255, 215, 0, 0.3)', border: '1px solid' }}
-                ></textarea>
-              </div>
-
-              <div>
-                <label htmlFor="tags" className="block text-sm font-medium text-gray-300 mb-1">Tags</label>
-                <input
-                  type="text"
-                  id="tags"
-                  name="tags"
-                  value={eventForm.tags}
-                  onChange={handleFormChange}
-                  placeholder="AR, VR, Unity, Beginner-friendly (comma separated)"
-                  className="w-full px-4 py-2 rounded-md focus:outline-none"
-                  style={{ backgroundColor: '#222', color: 'white', borderColor: 'rgba(255, 215, 0, 0.3)', border: '1px solid' }}
-                />
-                <p className="text-xs text-gray-400 mt-1">Separate tags with commas</p>
               </div>
               
-              {/* Image URL */}
               <div>
-                <label htmlFor="image" className="block text-sm font-medium text-gray-300 mb-1">Event Image URL</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Event Image URL</label>
                 <input
                   type="url"
-                  id="image"
                   name="image"
                   value={eventForm.image}
                   onChange={handleFormChange}
-                  placeholder="https://example.com/event-image.jpg"
-                  className="w-full px-4 py-2 rounded-md focus:outline-none"
-                  style={{ backgroundColor: '#222', color: 'white', borderColor: 'rgba(255, 215, 0, 0.3)', border: '1px solid' }}
+                  className="w-full px-4 py-2 rounded-md bg-gray-800 text-white border border-gold/30 focus:outline-none"
                 />
-                <p className="text-xs text-gray-400 mt-1">Direct link to an image (16:9 aspect ratio recommended)</p>
               </div>
               
-              {/* Form Status Messages */}
               {submitStatus.error && (
-                <div className="bg-red-900 bg-opacity-20 border border-red-500 text-red-300 px-4 py-3 rounded">
+                <div className="bg-red-900/20 border border-red-500 text-red-300 px-4 py-3 rounded">
                   {submitStatus.error}
                 </div>
               )}
               
               {submitStatus.success && (
-                <div className="bg-green-900 bg-opacity-20 border border-green-500 text-green-300 px-4 py-3 rounded">
+                <div className="bg-green-900/20 border border-green-500 text-green-300 px-4 py-3 rounded">
                   Event {selectedEvent ? 'updated' : 'created'} successfully!
                 </div>
               )}
               
-              <div className="pt-4 flex justify-end">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="px-4 py-2 rounded-md mr-2 text-sm"
-                  style={{ borderColor: '#FFD700', color: '#FFD700', border: '1px solid' }}
-                >
+              <div className="flex justify-end space-x-2">
+                <button type="button" onClick={closeModal} className="px-4 py-2 rounded-md text-sm border border-gold text-gold">
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-md text-sm flex items-center"
-                  style={{ backgroundColor: '#FFD700', color: 'black' }}
+                  className="px-4 py-2 rounded-md text-sm bg-gold text-black flex items-center"
                   disabled={submitStatus.loading}
                 >
-                  {submitStatus.loading && (
-                    <div className="mr-2 animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-black"></div>
-                  )}
+                  {submitStatus.loading && <div className="mr-2 animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-black"></div>}
                   {selectedEvent ? 'Update Event' : 'Create Event'}
                 </button>
               </div>
@@ -781,32 +677,19 @@ export default function EventsAdmin() {
       
       {/* Delete Confirmation Modal */}
       {isConfirmDeleteOpen && selectedEvent && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-          <div 
-            className="bg-black w-full max-w-lg rounded-lg border"
-            style={{ borderColor: 'rgba(255, 215, 0, 0.3)' }}
-          >
-            <div className="p-6 border-b" style={{ borderColor: 'rgba(255, 215, 0, 0.3)' }}>
-              <h2 className="text-xl font-bold" style={{ color: '#FFD700' }}>Confirm Delete</h2>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-black w-full max-w-lg rounded-lg border border-gold/30">
+            <div className="p-6 border-b border-gold/30">
+              <h2 className="text-xl font-bold text-gold">Confirm Delete</h2>
             </div>
-            
             <div className="p-6">
-              <p className="text-white mb-4">Are you sure you want to delete the event:</p>
-              <p className="font-medium text-lg mb-4" style={{ color: '#FFD700' }}>{selectedEvent.title}</p>
-              <p className="text-gray-300 mb-4">This action cannot be undone.</p>
-              
+              <p className="text-white mb-4">Are you sure you want to delete:</p>
+              <p className="font-medium text-lg mb-4 text-gold">{selectedEvent.title}</p>
               <div className="flex justify-end space-x-2">
-                <button
-                  onClick={closeDeleteConfirmation}
-                  className="px-4 py-2 rounded-md text-sm"
-                  style={{ borderColor: '#FFD700', color: '#FFD700', border: '1px solid' }}
-                >
+                <button onClick={() => setIsConfirmDeleteOpen(false)} className="px-4 py-2 rounded-md text-sm border border-gold text-gold">
                   Cancel
                 </button>
-                <button
-                  onClick={handleDeleteEvent}
-                  className="px-4 py-2 rounded-md text-sm bg-red-700 hover:bg-red-600 text-white"
-                >
+                <button onClick={handleDeleteEvent} className="px-4 py-2 rounded-md text-sm bg-red-700 hover:bg-red-600 text-white">
                   Delete Event
                 </button>
               </div>

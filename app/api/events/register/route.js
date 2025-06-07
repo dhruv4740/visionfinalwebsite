@@ -2,6 +2,44 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
+// GET method to fetch event registrations (for admin dashboard)
+export async function GET() {
+  try {
+    const dbPath = path.join(process.cwd(), 'data');
+    const registrationsPath = path.join(dbPath, 'event-registrations.json');
+    
+    // Check if file exists
+    if (!fs.existsSync(registrationsPath)) {
+      console.log('Event registrations file does not exist yet');
+      return NextResponse.json({
+        success: true,
+        registrations: []
+      });
+    }
+    
+    // Read existing registrations
+    const fileContent = fs.readFileSync(registrationsPath, 'utf8');
+    const registrations = JSON.parse(fileContent);
+    
+    console.log(`Found ${registrations.length} event registrations`);
+    
+    // Sort by timestamp (newest first)
+    registrations.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    return NextResponse.json({
+      success: true,
+      registrations: registrations
+    });
+    
+  } catch (error) {
+    console.error('Error fetching event registrations:', error);
+    return NextResponse.json(
+      { success: false, message: 'Failed to fetch registrations', registrations: [] },
+      { status: 500 }
+    );
+  }
+}
+
 // POST method to submit event registrations
 export async function POST(request) {
   try {

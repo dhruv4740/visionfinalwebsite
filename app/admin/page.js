@@ -5,99 +5,16 @@ import { useRouter } from 'next/navigation';
 export default function AdminDashboard() {
   const [authenticated, setAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [dashboardData, setDashboardData] = useState({
+    events: [],
+    registrations: [],
+    applications: [],
+    contacts: []
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const router = useRouter();
-  
-  // Mock data for event registrations
-  const eventRegistrations = [
-    {
-      id: 1,
-      name: "Rahul Sharma",
-      email: "rahul.sharma@student.kjsce.edu.in",
-      phone: "+91 9876543210",
-      year: "SY",
-      branch: "COMP",
-      event: "AR Workshop Series",
-      registeredAt: "2024-01-15",
-      attended: false
-    },
-    {
-      id: 2,
-      name: "Priya Patel",
-      email: "priya.patel@student.kjsce.edu.in",
-      phone: "+91 8765432109",
-      year: "TY",
-      branch: "IT",
-      event: "VR Development Bootcamp",
-      registeredAt: "2024-01-14",
-      attended: true
-    },
-    {
-      id: 3,
-      name: "Arjun Kumar",
-      email: "arjun.kumar@student.kjsce.edu.in",
-      phone: "+91 7654321098",
-      year: "FY",
-      branch: "EXTC",
-      event: "AR Workshop Series",
-      registeredAt: "2024-01-13",
-      attended: false
-    },
-    {
-      id: 4,
-      name: "Sneha Desai",
-      email: "sneha.desai@student.kjsce.edu.in",
-      phone: "+91 6543210987",
-      year: "LY",
-      branch: "MECH",
-      event: "Innovation Hackathon",
-      registeredAt: "2024-01-12",
-      attended: true
-    },
-    {
-      id: 5,
-      name: "Vikram Singh",
-      email: "vikram.singh@student.kjsce.edu.in",
-      phone: "+91 5432109876",
-      year: "SY",
-      branch: "CIVIL",
-      event: "VR Development Bootcamp",
-      registeredAt: "2024-01-11",
-      attended: false
-    },
-    {
-      id: 6,
-      name: "Anisha Joshi",
-      email: "anisha.joshi@student.kjsce.edu.in",
-      phone: "+91 4321098765",
-      year: "TY",
-      branch: "COMP",
-      event: "AR Workshop Series",
-      registeredAt: "2024-01-10",
-      attended: true
-    },
-    {
-      id: 7,
-      name: "Rohan Gupta",
-      email: "rohan.gupta@student.kjsce.edu.in",
-      phone: "+91 3210987654",
-      year: "FY",
-      branch: "IT",
-      event: "Innovation Hackathon",
-      registeredAt: "2024-01-09",
-      attended: false
-    },
-    {
-      id: 8,
-      name: "Kavya Nair",
-      email: "kavya.nair@student.kjsce.edu.in",
-      phone: "+91 2109876543",
-      year: "SY",
-      branch: "EXTC",
-      event: "VR Development Bootcamp",
-      registeredAt: "2024-01-08",
-      attended: true
-    }
-  ];
+
   // Check authentication on component mount and when returning to page
   useEffect(() => {
     const checkAuth = () => {
@@ -112,6 +29,7 @@ export default function AdminDashboard() {
         
         if (now - authTime < twentyFourHours) {
           setAuthenticated(true);
+          fetchDashboardData();
         } else {
           // Auth expired, clear storage and redirect to login
           localStorage.removeItem('vision_admin_auth');
@@ -149,7 +67,62 @@ export default function AdminDashboard() {
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };  }, [router]);
+    };
+  }, [router]);
+
+  // Fetch dashboard data from APIs
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError('');
+
+      // Fetch events and registrations
+      const [eventsRes, registrationsRes, applicationsRes, contactsRes] = await Promise.allSettled([
+        fetch('/api/admin/events'),
+        fetch('/api/events/register'),
+        fetch('/api/applications'),
+        fetch('/api/contact')
+      ]);
+
+      const newData = {
+        events: [],
+        registrations: [],
+        applications: [],
+        contacts: []
+      };
+
+      // Handle events
+      if (eventsRes.status === 'fulfilled' && eventsRes.value.ok) {
+        const events = await eventsRes.value.json();
+        newData.events = Array.isArray(events) ? events : [];
+      }
+
+      // Handle registrations
+      if (registrationsRes.status === 'fulfilled' && registrationsRes.value.ok) {
+        const regData = await registrationsRes.value.json();
+        newData.registrations = Array.isArray(regData.registrations) ? regData.registrations : [];
+      }
+
+      // Handle applications
+      if (applicationsRes.status === 'fulfilled' && applicationsRes.value.ok) {
+        const appData = await applicationsRes.value.json();
+        newData.applications = Array.isArray(appData.applications) ? appData.applications : [];
+      }
+
+      // Handle contacts
+      if (contactsRes.status === 'fulfilled' && contactsRes.value.ok) {
+        const contactData = await contactsRes.value.json();
+        newData.contacts = Array.isArray(contactData.contacts) ? contactData.contacts : [];
+      }
+
+      setDashboardData(newData);
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+      setError('Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
   
   const signOut = () => {
     localStorage.removeItem('vision_admin_auth');
@@ -162,20 +135,32 @@ export default function AdminDashboard() {
     router.push(`/admin/${path}`);
   };
 
-  // Get attendance badge
-  const getAttendanceBadge = (attended) => {
-    if (attended) {
-      return 'bg-green-900/30 text-green-300 border-green-500/50';
-    } else {
-      return 'bg-gray-900/30 text-gray-300 border-gray-500/50';
-    }
+  // Get statistics from real data
+  const getStats = () => {
+    const totalRegistrations = dashboardData.registrations.length;
+    const activeEvents = dashboardData.events.filter(event => {
+      if (!event.date) return false;
+      try {
+        const eventDate = new Date(event.date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return eventDate >= today;
+      } catch {
+        return false;
+      }
+    }).length;
+    const totalApplications = dashboardData.applications.length;
+    const totalContacts = dashboardData.contacts.length;
+
+    return {
+      totalRegistrations,
+      activeEvents,
+      totalApplications,
+      totalContacts
+    };
   };
 
-  // Get statistics
-  const totalRegistrations = eventRegistrations.length;
-  const attendedEvents = eventRegistrations.filter(reg => reg.attended).length;
-  const pendingAttendance = eventRegistrations.filter(reg => !reg.attended).length;
-  const uniqueEvents = [...new Set(eventRegistrations.map(reg => reg.event))].length;
+  const stats = getStats();
   
   // Show loading state
   if (isLoading) {
@@ -186,7 +171,8 @@ export default function AdminDashboard() {
           <p style={{ color: '#FFD700' }}>Loading...</p>
         </div>
       </div>
-    );  }
+    );
+  }
   
   return (
     <div className="min-h-screen bg-black py-12 px-4">
@@ -197,6 +183,14 @@ export default function AdminDashboard() {
             <p className="text-gray-400">Manage your AR/VR team platform</p>
           </div>
           <div className="flex items-center space-x-4">
+            <button
+              onClick={fetchDashboardData}
+              disabled={loading}
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-all hover:bg-gray-800"
+              style={{ borderColor: '#FFD700', color: '#FFD700', border: '1px solid' }}
+            >
+              {loading ? 'Refreshing...' : 'Refresh'}
+            </button>
             <div className="text-sm text-gray-500">
               Session active
             </div>
@@ -210,110 +204,142 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Event Registration Stats */}
+        {/* Error Display */}
+        {error && (
+          <div className="mb-6 bg-red-900/20 border border-red-500 text-red-300 px-4 py-3 rounded-lg">
+            <div className="flex items-center">
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {error}
+            </div>
+          </div>
+        )}
+
+        {/* Dashboard Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
           <div className="p-6 rounded-xl border text-center" style={{ borderColor: 'rgba(255, 215, 0, 0.3)', backgroundColor: '#0A0A0A' }}>
-            <div className="text-3xl font-bold mb-2" style={{ color: '#FFD700' }}>{totalRegistrations}</div>
+            <div className="text-3xl font-bold mb-2" style={{ color: '#FFD700' }}>{stats.totalRegistrations}</div>
             <div className="text-gray-400">Total Registrations</div>
           </div>
           
           <div className="p-6 rounded-xl border text-center" style={{ borderColor: 'rgba(255, 215, 0, 0.3)', backgroundColor: '#0A0A0A' }}>
-            <div className="text-3xl font-bold mb-2 text-blue-300">{uniqueEvents}</div>
+            <div className="text-3xl font-bold mb-2 text-blue-300">{stats.activeEvents}</div>
             <div className="text-gray-400">Active Events</div>
           </div>
           
           <div className="p-6 rounded-xl border text-center" style={{ borderColor: 'rgba(255, 215, 0, 0.3)', backgroundColor: '#0A0A0A' }}>
-            <div className="text-3xl font-bold mb-2 text-green-300">{attendedEvents}</div>
-            <div className="text-gray-400">Attended</div>
+            <div className="text-3xl font-bold mb-2 text-green-300">{stats.totalApplications}</div>
+            <div className="text-gray-400">Team Applications</div>
           </div>
           
           <div className="p-6 rounded-xl border text-center" style={{ borderColor: 'rgba(255, 215, 0, 0.3)', backgroundColor: '#0A0A0A' }}>
-            <div className="text-3xl font-bold mb-2 text-gray-300">{pendingAttendance}</div>
-            <div className="text-gray-400">Upcoming</div>
+            <div className="text-3xl font-bold mb-2 text-purple-300">{stats.totalContacts}</div>
+            <div className="text-gray-400">Contact Messages</div>
           </div>
         </div>
 
-        {/* Event Registrations List */}
+        {/* Recent Activity Overview */}
         <div className="mb-12">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold" style={{ color: '#FFD700' }}>Event Registrations</h2>
+            <h2 className="text-2xl font-bold" style={{ color: '#FFD700' }}>Recent Activity</h2>
             <button
               onClick={() => navigateToSection('events')}
               className="px-4 py-2 rounded-lg text-sm font-medium transition-all hover:brightness-110"
               style={{ backgroundColor: '#FFD700', color: 'black' }}
             >
-              Manage Events
+              View All
             </button>
           </div>
           
-          <div className="rounded-xl border overflow-hidden" style={{ borderColor: 'rgba(255, 215, 0, 0.3)', backgroundColor: '#0A0A0A' }}>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="border-b border-gray-700">
-                  <tr>
-                    <th className="text-left p-4 text-gray-300 font-semibold">Student</th>
-                    <th className="text-left p-4 text-gray-300 font-semibold">Event</th>
-                    <th className="text-left p-4 text-gray-300 font-semibold">Year/Branch</th>
-                    <th className="text-left p-4 text-gray-300 font-semibold">Registration Date</th>
-                    <th className="text-left p-4 text-gray-300 font-semibold">Attendance</th>
-                    <th className="text-left p-4 text-gray-300 font-semibold">Contact</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {eventRegistrations.map((registration) => (
-                    <tr key={registration.id} className="border-b border-gray-800 hover:bg-gray-900/50 transition-colors">
-                      <td className="p-4">
-                        <div>
-                          <div className="font-semibold text-white">{registration.name}</div>
-                          <div className="text-sm text-gray-400">{registration.email}</div>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="text-white font-medium">{registration.event}</div>
-                      </td>
-                      <td className="p-4">
-                        <div className="text-white">
-                          <span className="font-semibold">{registration.year}</span> - {registration.branch}
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="text-gray-300">
-                          {new Date(registration.registeredAt).toLocaleDateString('en-IN', {
-                            day: '2-digit',
-                            month: 'short',
-                            year: 'numeric'
-                          })}
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getAttendanceBadge(registration.attended)}`}>
-                          {registration.attended ? 'Attended' : 'Upcoming'}
-                        </span>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex space-x-2">
-                          <a 
-                            href={`tel:${registration.phone}`}
-                            className="text-xs px-3 py-1 rounded-lg border transition-all hover:brightness-110"
-                            style={{ borderColor: '#FFD700', color: '#FFD700' }}
-                          >
-                            Call
-                          </a>
-                          <a 
-                            href={`mailto:${registration.email}`}
-                            className="text-xs px-3 py-1 rounded-lg border transition-all hover:brightness-110"
-                            style={{ borderColor: '#FFD700', color: '#FFD700' }}
-                          >
-                            Email
-                          </a>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gold"></div>
             </div>
-          </div>
+          ) : dashboardData.registrations.length === 0 ? (
+            <div className="rounded-xl border p-12 text-center" style={{ borderColor: 'rgba(255, 215, 0, 0.3)', backgroundColor: '#0A0A0A' }}>
+              <div className="text-6xl mb-4">📊</div>
+              <p className="text-gray-400 text-lg mb-4">No activity data available yet</p>
+              <p className="text-gray-500 text-sm">Activity will appear here as users interact with your platform</p>
+            </div>
+          ) : (
+            <div className="rounded-xl border overflow-hidden" style={{ borderColor: 'rgba(255, 215, 0, 0.3)', backgroundColor: '#0A0A0A' }}>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="border-b border-gray-700">
+                    <tr>
+                      <th className="text-left p-4 text-gray-300 font-semibold">Student</th>
+                      <th className="text-left p-4 text-gray-300 font-semibold">Event</th>
+                      <th className="text-left p-4 text-gray-300 font-semibold">Year/Branch</th>
+                      <th className="text-left p-4 text-gray-300 font-semibold">Registration Date</th>
+                      <th className="text-left p-4 text-gray-300 font-semibold">Contact</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dashboardData.registrations.slice(0, 10).map((registration, index) => (
+                      <tr key={registration.id || index} className="border-b border-gray-800 hover:bg-gray-900/50 transition-colors">
+                        <td className="p-4">
+                          <div>
+                            <div className="font-semibold text-white">{registration.name || 'N/A'}</div>
+                            <div className="text-sm text-gray-400">{registration.email || 'N/A'}</div>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <div className="text-white font-medium">{registration.eventTitle || 'N/A'}</div>
+                        </td>
+                        <td className="p-4">
+                          <div className="text-white">
+                            <span className="font-semibold">{registration.year || 'N/A'}</span> - {registration.branch || 'N/A'}
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <div className="text-gray-300">
+                            {registration.timestamp ? new Date(registration.timestamp).toLocaleDateString('en-IN', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric'
+                            }) : 'N/A'}
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex space-x-2">
+                            {registration.phone && (
+                              <a 
+                                href={`tel:${registration.phone}`}
+                                className="text-xs px-3 py-1 rounded-lg border transition-all hover:brightness-110"
+                                style={{ borderColor: '#FFD700', color: '#FFD700' }}
+                              >
+                                Call
+                              </a>
+                            )}
+                            {registration.email && (
+                              <a 
+                                href={`mailto:${registration.email}`}
+                                className="text-xs px-3 py-1 rounded-lg border transition-all hover:brightness-110"
+                                style={{ borderColor: '#FFD700', color: '#FFD700' }}
+                              >
+                                Email
+                              </a>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {dashboardData.registrations.length > 10 && (
+                <div className="p-4 border-t border-gray-700 text-center">
+                  <button
+                    onClick={() => navigateToSection('events')}
+                    className="text-sm text-gray-400 hover:text-gold transition-colors"
+                  >
+                    View all {dashboardData.registrations.length} registrations →
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
         
         {/* Management Cards */}
@@ -331,6 +357,7 @@ export default function AdminDashboard() {
               </svg>
             </div>
             <p className="text-gray-300 mb-4">Manage and review all team applications.</p>
+            <div className="text-2xl font-bold mb-2 text-green-300">{stats.totalApplications}</div>
             <div className="flex justify-end">
               <button 
                 onClick={(e) => {
@@ -358,6 +385,7 @@ export default function AdminDashboard() {
               </svg>
             </div>
             <p className="text-gray-300 mb-4">View and respond to contact form submissions.</p>
+            <div className="text-2xl font-bold mb-2 text-purple-300">{stats.totalContacts}</div>
             <div className="flex justify-end">
               <button 
                 onClick={(e) => {
@@ -385,6 +413,7 @@ export default function AdminDashboard() {
               </svg>
             </div>
             <p className="text-gray-300 mb-4">Create and manage upcoming events.</p>
+            <div className="text-2xl font-bold mb-2 text-blue-300">{stats.activeEvents}</div>
             <div className="flex justify-end">
               <button 
                 onClick={(e) => {

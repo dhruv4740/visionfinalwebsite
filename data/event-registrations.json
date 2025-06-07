@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1749325997791",
+    "eventId": "1747992290665",
+    "eventTitle": "Workshop",
+    "name": "Dhruv Kothari",
+    "email": "dk1@somaiya.edu",
+    "phone": "09152534954",
+    "year": "SY",
+    "branch": "IT",
+    "timestamp": "2025-06-07T19:53:17.791Z",
+    "status": "registered"
+  },
+  {
+    "id": "1749328022332",
+    "eventId": "1747992290665",
+    "eventTitle": "Workshop",
+    "name": "Soniya Vinchurkar",
+    "email": "soniya.v@somaiya.edu",
+    "phone": "+919351784118",
+    "year": "SY",
+    "branch": "OTHER",
+    "timestamp": "2025-06-07T20:27:02.332Z",
+    "status": "registered"
+  }
+]
