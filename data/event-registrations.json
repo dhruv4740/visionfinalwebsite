@@ -22,5 +22,17 @@
     "branch": "OTHER",
     "timestamp": "2025-06-07T20:27:02.332Z",
     "status": "registered"
+  },
+  {
+    "id": "1749465060125",
+    "eventId": "1747992290665",
+    "eventTitle": "Workshop",
+    "name": "Dhruv Kothari",
+    "email": "dhruvkothari13062006@gmail.com",
+    "phone": "+9999999999999",
+    "year": "FY",
+    "branch": "IT",
+    "timestamp": "2025-06-09T10:31:00.125Z",
+    "status": "registered"
   }
 ]

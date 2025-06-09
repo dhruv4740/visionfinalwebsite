@@ -6,14 +6,14 @@ export default function AboutSection() {
     <section id="about" className="relative min-h-screen text-white py-20">
       {/* Header */}
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
+        <div className="text-center mb-4">
           <h1 className="text-6xl md:text-7xl font-bold text-gold mb-4">
             ABOUT US
           </h1>
         </div>
 
         {/* Main Content Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-8">
           {/* Left Side - VR Image */}
           <div className="flex justify-center">
             <div className="w-[520px] h-[520px] relative overflow-hidden rounded-lg group">
@@ -41,7 +41,7 @@ export default function AboutSection() {
         </div>
 
         {/* Decorative Line */}
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent mb-20"></div>
+        <div className="w-full h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent mb-4"></div>
 
         {/* Our Projects Section */}
         <div>

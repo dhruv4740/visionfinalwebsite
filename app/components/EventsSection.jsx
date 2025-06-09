@@ -99,8 +99,8 @@ export default function EventsSection({ maxEvents = 6 }) {
         });
       },
       { 
-        threshold: 0.01, // Lower threshold - trigger when 10% is visible (if 0.1)
-        rootMargin: "0px 0px -50px 0px" // Only reset when section is 50px past viewport
+        threshold: 0.01,
+        rootMargin: "0px 0px -50px 0px"
       }
     );
     
@@ -167,12 +167,10 @@ export default function EventsSection({ maxEvents = 6 }) {
     }, 5000);
   };
 
-  
   const handleRegister = (evt, e) => {
     e.stopPropagation();
     openRegistrationModal(evt, e);
   };
-  
 
   if (loading) {
     return (
@@ -185,7 +183,7 @@ export default function EventsSection({ maxEvents = 6 }) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="animate-pulse">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-8 border border-gold/20">
+                <div className="bg-gradient-to-br from-gray-900/40 to-black/20 rounded-2xl p-8 border border-gold/30">
                   <div className="h-48 bg-gray-700/50 rounded-xl mb-6"></div>
                   <div className="h-6 bg-gray-700/50 rounded mb-4"></div>
                   <div className="h-4 bg-gray-700/50 rounded mb-2 w-3/4"></div>
@@ -204,13 +202,13 @@ export default function EventsSection({ maxEvents = 6 }) {
       <section className="py-32">
         <div className="container mx-auto px-6">
           <div className="text-center">
-            <div className="bg-red-900/20 border border-red-500/50 rounded-2xl p-8 max-w-md mx-auto backdrop-blur-sm">
-              <div className="text-red-400 text-5xl mb-4">⚠️</div>
-              <h3 className="text-red-400 font-semibold mb-2">Error Loading Events</h3>
-              <p className="text-red-300 text-sm mb-4">{error}</p>
+            <div className="bg-gradient-to-br from-gray-900/40 to-black/20 border border-gold/30 rounded-2xl p-8 max-w-md mx-auto backdrop-blur-sm">
+              <div className="text-gold text-5xl mb-4">⚠️</div>
+              <h3 className="text-gold font-semibold mb-2">Error Loading Events</h3>
+              <p className="text-gray-300 text-sm mb-4">{error}</p>
               <button 
                 onClick={() => window.location.reload()} 
-                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all duration-300"
+                className="px-6 py-3 bg-gold hover:bg-gold/90 text-black rounded-lg font-semibold transition-all duration-300"
               >
                 Retry
               </button>
@@ -226,7 +224,7 @@ export default function EventsSection({ maxEvents = 6 }) {
       <section className="py-32">
         <div className="container mx-auto px-6">
           <div className="text-center">
-            <div className="bg-gray-900/40 border border-gold/30 rounded-2xl p-12 max-w-md mx-auto backdrop-blur-sm">
+            <div className="bg-gradient-to-br from-gray-900/40 to-black/20 border border-gold/30 rounded-2xl p-12 max-w-md mx-auto backdrop-blur-sm">
               <div className="text-6xl mb-6 animate-bounce">📅</div>
               <h3 className="text-gold font-semibold text-xl mb-3">No Events Available</h3>
               <p className="text-gray-400">Check back soon for upcoming events and workshops!</p>
@@ -241,7 +239,7 @@ export default function EventsSection({ maxEvents = 6 }) {
     <>
       {/* Success Message */}
       {registrationSuccess && (
-        <div className="fixed top-4 right-4 z-50 bg-green-900/20 border border-green-500/50 text-green-300 px-6 py-3 rounded-lg shadow-lg backdrop-blur-sm">
+        <div className="fixed top-4 right-4 z-50 bg-gradient-to-br from-gray-900/95 to-black/90 border border-gold/50 text-gold px-6 py-3 rounded-lg shadow-xl backdrop-blur-sm">
           ✅ {registrationSuccess}
         </div>
       )}
@@ -267,16 +265,19 @@ export default function EventsSection({ maxEvents = 6 }) {
                   className="event-card group cursor-pointer"
                   onClick={() => openModal(evt, index)}
                 >
-                  {/* Card Container */}
-                  <div className="bg-gradient-to-br from-gray-900/90 to-black/80 backdrop-blur-sm rounded-2xl border border-gold/20 hover:border-gold/40 shadow-2xl hover:shadow-gold/20 transition-all duration-500 transform hover:-translate-y-2 hover:scale-[1.02] overflow-hidden h-full flex flex-col">
+                  {/* Enhanced Card Container with Gold Theme */}
+                  <div className="relative bg-gradient-to-br from-gray-900/40 to-black/20 backdrop-blur-sm rounded-2xl border border-gold/30 hover:border-gold/60 shadow-2xl hover:shadow-gold/20 transition-all duration-500 transform hover:-translate-y-3 hover:scale-[1.02] overflow-hidden h-full flex flex-col group">
                     
-                    {/* Responsive Image Container */}
-                    <div className="relative w-full h-64 overflow-hidden bg-gradient-to-br from-gold/10 to-gray-800/50 rounded-t-2xl">
+                    {/* Card Shine Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-gold/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                    
+                    {/* Enhanced Image Container */}
+                    <div className="relative w-full h-64 overflow-hidden bg-gradient-to-br from-gold/10 to-gray-800/30 rounded-t-2xl">
                       {evt.image ? (
                         <img
                           src={evt.image}
                           alt={evt.title}
-                          className="w-full h-full object-contain bg-gray-900/50 transition-transform duration-700 group-hover:scale-105"
+                          className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
                           onError={(e) => {
                             e.target.style.display = 'none';
                             e.target.nextSibling.style.display = 'flex';
@@ -284,49 +285,57 @@ export default function EventsSection({ maxEvents = 6 }) {
                         />
                       ) : null}
                       
-                      {/* Fallback Icon */}
-                      <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-40" style={{display: evt.image ? 'none' : 'flex'}}>
+                      {/* Enhanced Fallback Icon */}
+                      <div className="absolute inset-0 flex items-center justify-center text-6xl text-gold/40 bg-gradient-to-br from-gold/5 to-gray-800/20" style={{display: evt.image ? 'none' : 'flex'}}>
                         🎯
                       </div>
                       
-                      {/* Subtle Overlay for better text visibility */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                      {/* Enhanced Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                       
-                      {/* Status Badge */}
+                      {/* Enhanced Status Badge */}
                       <div className="absolute top-4 left-4">
-                        <span className={`px-3 py-1.5 text-xs font-semibold rounded-full backdrop-blur-md border ${
+                        <span className={`px-4 py-2 text-xs font-bold rounded-full backdrop-blur-md border-2 transition-all duration-300 group-hover:scale-105 ${
                           isUpcoming(evt.date) 
-                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50 shadow-lg shadow-emerald-500/25' 
-                            : 'bg-gold/20 text-gold border-gold/50 shadow-lg shadow-gold/25'
+                            ? 'bg-gradient-to-r from-emerald-500/20 to-green-600/20 text-emerald-300 border-emerald-400/50 shadow-lg shadow-emerald-500/25' 
+                            : 'bg-gradient-to-r from-gold/20 to-yellow-500/20 text-gold border-gold/50 shadow-lg shadow-gold/25'
                         }`}>
-                          {isUpcoming(evt.date) ? '🔴 Live' : '📅 Past'}
+                          {isUpcoming(evt.date) ? '🔴 LIVE' : '📅 PAST'}
                         </span>
                       </div>
 
-                      {/* Quick Register Button - Updated */}
+                      {/* Enhanced Quick Register Button */}
                       {isUpcoming(evt.date) && (
-                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-105">
                           <button
                             onClick={(e) => handleRegister(evt, e)}
-                            className="px-4 py-2 bg-gold/90 hover:bg-gold text-black text-sm font-semibold rounded-lg backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                            className="px-4 py-2 bg-gradient-to-r from-gold via-yellow-500 to-gold hover:from-yellow-400 hover:via-gold hover:to-yellow-400 text-black text-sm font-bold rounded-lg backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-gold/50"
                           >
                             Quick Register
                           </button>
                         </div>
                       )}
+
+                      {/* Corner Accent */}
+                      <div className="absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl from-gold/20 to-transparent opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
                     </div>
 
-                    {/* Content */}
-                    <div className="p-6 flex flex-col flex-grow">
+                    {/* Enhanced Content */}
+                    <div className="p-6 flex flex-col flex-grow relative">
+                      {/* Decorative Border */}
+                      <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent"></div>
+                      
                       {/* Title */}
-                      <h3 className="text-xl font-bold text-white mb-3 group-hover:text-gold transition-colors duration-300 line-clamp-2 leading-tight">
+                      <h3 className="text-xl font-bold text-white mb-4 group-hover:text-gold transition-colors duration-300 line-clamp-2 leading-tight mt-2">
                         {evt.title}
                       </h3>
                       
-                      {/* Date */}
-                      <div className="flex items-center text-gray-400 text-sm mb-4 group-hover:text-gray-300 transition-colors">
-                        <span className="mr-2 text-base">📅</span>
-                        <span className={isUpcoming(evt.date) ? 'text-emerald-400 font-medium' : ''}>
+                      {/* Date with Enhanced Styling */}
+                      <div className="flex items-center text-gray-400 text-sm mb-4 group-hover:text-gold/80 transition-colors">
+                        <div className="w-8 h-8 rounded-full bg-gold/20 flex items-center justify-center mr-3 group-hover:bg-gold/30 transition-colors">
+                          <span className="text-gold text-sm">📅</span>
+                        </div>
+                        <span className={`font-medium ${isUpcoming(evt.date) ? 'text-emerald-400' : 'text-gray-300'}`}>
                           {formatDate(evt.date)}
                         </span>
                       </div>
@@ -336,14 +345,14 @@ export default function EventsSection({ maxEvents = 6 }) {
                         {evt.description}
                       </p>
                       
-                      {/* Action Buttons - Updated */}
+                      {/* Enhanced Action Buttons */}
                       <div className="flex gap-3 mt-auto">
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
                             openModal(evt, index);
                           }}
-                          className="flex-1 px-4 py-2.5 bg-gray-800/80 hover:bg-gray-700/80 text-gray-200 hover:text-white border border-gray-600/50 hover:border-gray-500/50 rounded-lg font-medium transition-all duration-300 text-sm backdrop-blur-sm hover:shadow-lg"
+                          className="flex-1 px-4 py-3 bg-gradient-to-r from-gray-800/80 to-gray-900/80 hover:from-gray-700/80 hover:to-gray-800/80 text-gray-200 hover:text-white border border-gold/20 hover:border-gold/40 rounded-lg font-semibold transition-all duration-300 text-sm backdrop-blur-sm hover:shadow-lg transform hover:scale-105"
                         >
                           View Details
                         </button>
@@ -351,27 +360,30 @@ export default function EventsSection({ maxEvents = 6 }) {
                         {isUpcoming(evt.date) && (
                           <button 
                             onClick={(e) => handleRegister(evt, e)}
-                            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-gold/20 to-yellow-500/20 hover:from-gold/30 hover:to-yellow-500/30 text-gold hover:text-yellow-300 border border-gold/40 hover:border-gold/60 rounded-lg font-medium transition-all duration-300 text-sm backdrop-blur-sm hover:shadow-lg hover:shadow-gold/25"
+                            className="flex-1 px-4 py-3 bg-gradient-to-r from-gold/20 to-yellow-500/20 hover:from-gold/30 hover:to-yellow-500/30 text-gold hover:text-yellow-300 border border-gold/40 hover:border-gold/60 rounded-lg font-semibold transition-all duration-300 text-sm backdrop-blur-sm hover:shadow-lg hover:shadow-gold/25 transform hover:scale-105"
                           >
                             Register
                           </button>
                         )}
                       </div>
+
+                      {/* Bottom Accent Line */}
+                      <div className="absolute bottom-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent mt-4"></div>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* View All Events Button */}
+            {/* Enhanced View All Events Button */}
             <div className="text-center mt-16">
               <Link 
                 href="/events"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-gold/10 to-yellow-500/10 hover:from-gold/20 hover:to-yellow-500/20 text-gold hover:text-yellow-300 border-2 border-gold/40 hover:border-gold/60 rounded-xl font-semibold transition-all duration-500 transform hover:-translate-y-1 hover:scale-105 backdrop-blur-sm hover:shadow-2xl hover:shadow-gold/25 group"
+                className="inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-gray-900/40 to-black/20 hover:from-gray-800/50 hover:to-gray-900/30 text-gold hover:text-yellow-300 border-2 border-gold/40 hover:border-gold/60 rounded-xl font-bold transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 backdrop-blur-sm hover:shadow-2xl hover:shadow-gold/25 group text-lg"
               >
-                <span className="text-lg">View All Events</span>
+                <span>View All Events</span>
                 <svg 
-                  className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" 
+                  className="w-6 h-6 transition-transform duration-300 group-hover:translate-x-2" 
                   fill="none" 
                   stroke="currentColor" 
                   viewBox="0 0 24 24"
@@ -384,7 +396,7 @@ export default function EventsSection({ maxEvents = 6 }) {
         </div>
       </section>
 
-      {/* Enhanced Modal with Smooth Animations */}
+      {/* Modal remains the same */}
       {isModalOpen && selectedEvent && (
         <div
           onClick={closeModal}
@@ -511,7 +523,7 @@ export default function EventsSection({ maxEvents = 6 }) {
         onSuccess={handleRegistrationSuccess}
       />
             
-      {/* Enhanced CSS with Smooth Animations */}
+      {/* Enhanced CSS */}
       <style jsx global>{`
         /* Section visibility */
         #events {
@@ -594,11 +606,10 @@ export default function EventsSection({ maxEvents = 6 }) {
         .event-card.animate-card-fade-up,
         .event-cards-wrapper [class*='grid'] > div.animate-card-fade-up {
           animation: cardFadeUp 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
-          /* Keep cards visible after animation */
           animation-fill-mode: forwards;
         }
 
-        /* Enhanced Modal Animations from events page */
+        /* Enhanced Modal Animations */
         @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }
@@ -640,7 +651,7 @@ export default function EventsSection({ maxEvents = 6 }) {
           animation: modalScaleOut 400ms cubic-bezier(0.36, 0, 0.66, -0.56) forwards; 
         }
 
-        /* Custom Scrollbar for Modal - Subtle & Clean */
+        /* Custom Scrollbar */
         .modal-scale-in::-webkit-scrollbar,
         .modal-scale-out::-webkit-scrollbar {
           width: 4px;
@@ -692,6 +703,16 @@ export default function EventsSection({ maxEvents = 6 }) {
           -webkit-line-clamp: 3;
           -webkit-box-orient: vertical;
           overflow: hidden;
+        }
+
+        /* Enhanced hover effects */
+        .event-card:hover .w-8 {
+          background-color: rgba(255, 215, 0, 0.4);
+          transform: scale(1.1);
+        }
+
+        .event-card:hover h3 {
+          color: #ffd700;
         }
       `}</style>
     </>
