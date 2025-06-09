@@ -14,6 +14,9 @@ const inter = Inter({
 export const metadata = {
   title: 'Vision KJSCE',
   description: 'Official website for Vision KJSCE',
+  icons: {
+    icon: '/logo.png', // Changed from favicon.ico to logo.png
+  },
 }
 
 export default function RootLayout({ children }) {
