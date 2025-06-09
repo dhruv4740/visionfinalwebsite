@@ -1,4 +1,4 @@
-export default function Background({ image = "/images/background.jpg" }) {
+export default function Background({ image = "/images/radombg.png" }) {
   return (
     <div className="fixed inset-0 z-0">
       {/* Background image with overlay */}
