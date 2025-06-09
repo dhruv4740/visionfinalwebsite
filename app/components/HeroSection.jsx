@@ -1,10 +1,12 @@
 // app/components/HeroSection.jsx
 import Link from "next/link";
+import Background from "./Background";
 
 export default function HeroSection({ onOpenModal }) {
   return (
-    <section id="hero" className="relative h-screen flex items-center justify-center text-center overflow-hidden">
-      <div className="relative z-10 container mx-auto px-6">
+    <section className="relative min-h-screen flex items-center justify-center">
+      <Background image="/images/hero-bg.jpg" />
+      <div className="relative z-10 w-full container mx-auto px-6">
         <div className="max-w-4xl mx-auto">
           <h1
             className="text-6xl md:text-8xl font-black text-gold mb-6 opacity-0 translate-y-8 transition duration-1000 ease-out animate-fade-up tracking-tight"
@@ -22,8 +24,8 @@ export default function HeroSection({ onOpenModal }) {
             className="flex flex-col sm:flex-row gap-6 justify-center opacity-0 translate-y-8 transition duration-1000 ease-out animate-fade-up"
             style={{ animationDelay: "600ms" }}
           >
-            <button 
-              onClick={onOpenModal} 
+            <button
+              onClick={onOpenModal}
               className="px-12 py-4 bg-gold text-black rounded-lg font-bold text-lg hover:shadow-xl hover:shadow-gold/30 transition-all duration-300 transform hover:scale-105"
             >
               Join Our Vision

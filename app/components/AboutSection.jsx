@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 export default function AboutSection() {
   return (
@@ -15,11 +16,14 @@ export default function AboutSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-20">
           {/* Left Side - VR Image */}
           <div className="flex justify-center">
-            <div className="w-80 h-80 relative overflow-hidden rounded-lg">
-              <img 
-                src="/images/vrwoman.png" 
-                alt="VR Experience - Person wearing VR headset with holographic interfaces"
-                className="w-full h-full object-cover"
+            <div className="w-[520px] h-[520px] relative overflow-hidden rounded-lg group">
+              <Image
+                src="/images/remove bg.png"
+                alt="Stylized gold-tinted person wearing VR headset"
+                fill
+                className="object-cover"
+                sizes="520px"
+                priority
               />
             </div>
           </div>
