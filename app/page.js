@@ -8,6 +8,7 @@ import AboutSection from "./components/AboutSection";
 import EventsSection from "./components/EventsSection";
 import TeamSection from "./components/TeamSection";
 import ContactSection from "./components/ContactSection";
+import Footer from "./components/Footer";
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,10 +35,10 @@ export default function Home() {
   const closeModal = () => setIsModalOpen(false);
 
   return (
-    <div className="font-sans text-white overflow-x-hidden relative min-h-screen">
+    <div className="font-sans text-white overflow-x-hidden relative min-h-screen flex flex-col">
       <Background />
 
-      <div className="relative z-10">
+      <div className="relative z-10 flex-1 flex flex-col">
         <Header />
         <ApplicationModal isOpen={isModalOpen} onClose={closeModal} />
 
@@ -66,10 +67,17 @@ export default function Home() {
             </div>
           </div>
         </section>
+       
       </div>
+
+      <Footer />
 
       {/* Global Styles */}
       <style jsx global>{`
+        html, body, #__next, .font-sans {
+          min-height: 100%;
+          height: 100%;
+        }
         :root {
           --gold: #B8860B;
           --gold-light: #DAA520;
