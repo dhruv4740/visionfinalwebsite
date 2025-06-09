@@ -265,19 +265,19 @@ export default function EventsSection({ maxEvents = 6 }) {
                   className="event-card group cursor-pointer"
                   onClick={() => openModal(evt, index)}
                 >
-                  {/* Enhanced Card Container with Gold Theme */}
-                  <div className="relative bg-gradient-to-br from-gray-900/40 to-black/20 backdrop-blur-sm rounded-2xl border border-gold/30 hover:border-gold/60 shadow-2xl hover:shadow-gold/20 transition-all duration-500 transform hover:-translate-y-3 hover:scale-[1.02] overflow-hidden h-full flex flex-col group">
+                  {/* Enhanced Card Container - NO BORDERS */}
+                  <div className="relative bg-gradient-to-br from-gray-900/60 to-black/40 backdrop-blur-sm rounded-2xl shadow-2xl hover:shadow-gold/20 transition-all duration-500 transform hover:-translate-y-3 hover:scale-[1.02] overflow-hidden h-full flex flex-col">
                     
                     {/* Card Shine Effect */}
                     <div className="absolute inset-0 bg-gradient-to-br from-gold/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                     
-                    {/* Enhanced Image Container */}
-                    <div className="relative w-full h-64 overflow-hidden bg-gradient-to-br from-gold/10 to-gray-800/30 rounded-t-2xl">
+                    {/* PROPERLY RESPONSIVE Image Container */}
+                    <div className="relative w-full aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-t-2xl">
                       {evt.image ? (
                         <img
                           src={evt.image}
                           alt={evt.title}
-                          className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
+                          className="w-full h-full object-contain bg-gray-900/50 transition-all duration-700 group-hover:scale-105 group-hover:brightness-110"
                           onError={(e) => {
                             e.target.style.display = 'none';
                             e.target.nextSibling.style.display = 'flex';
@@ -286,35 +286,23 @@ export default function EventsSection({ maxEvents = 6 }) {
                       ) : null}
                       
                       {/* Enhanced Fallback Icon */}
-                      <div className="absolute inset-0 flex items-center justify-center text-6xl text-gold/40 bg-gradient-to-br from-gold/5 to-gray-800/20" style={{display: evt.image ? 'none' : 'flex'}}>
-                        🎯
+                      <div className="w-full h-full flex items-center justify-center text-6xl text-gold/60 bg-gradient-to-br from-gray-800/30 to-gray-900/30" style={{display: evt.image ? 'none' : 'flex'}}>
+                        📅
                       </div>
                       
                       {/* Enhanced Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
                       
                       {/* Enhanced Status Badge */}
                       <div className="absolute top-4 left-4">
-                        <span className={`px-4 py-2 text-xs font-bold rounded-full backdrop-blur-md border-2 transition-all duration-300 group-hover:scale-105 ${
+                        <span className={`px-3 py-1.5 text-xs font-bold rounded-full backdrop-blur-md transition-all duration-300 group-hover:scale-105 ${
                           isUpcoming(evt.date) 
-                            ? 'bg-gradient-to-r from-emerald-500/20 to-green-600/20 text-emerald-300 border-emerald-400/50 shadow-lg shadow-emerald-500/25' 
-                            : 'bg-gradient-to-r from-gold/20 to-yellow-500/20 text-gold border-gold/50 shadow-lg shadow-gold/25'
+                            ? 'bg-gradient-to-r from-emerald-500/30 to-green-600/30 text-emerald-200 shadow-lg shadow-emerald-500/25' 
+                            : 'bg-gradient-to-r from-gold/30 to-yellow-500/30 text-gold shadow-lg shadow-gold/25'
                         }`}>
                           {isUpcoming(evt.date) ? '🔴 LIVE' : '📅 PAST'}
                         </span>
                       </div>
-
-                      {/* Enhanced Quick Register Button */}
-                      {isUpcoming(evt.date) && (
-                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-105">
-                          <button
-                            onClick={(e) => handleRegister(evt, e)}
-                            className="px-4 py-2 bg-gradient-to-r from-gold via-yellow-500 to-gold hover:from-yellow-400 hover:via-gold hover:to-yellow-400 text-black text-sm font-bold rounded-lg backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-gold/50"
-                          >
-                            Quick Register
-                          </button>
-                        </div>
-                      )}
 
                       {/* Corner Accent */}
                       <div className="absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl from-gold/20 to-transparent opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
@@ -352,7 +340,7 @@ export default function EventsSection({ maxEvents = 6 }) {
                             e.stopPropagation();
                             openModal(evt, index);
                           }}
-                          className="flex-1 px-4 py-3 bg-gradient-to-r from-gray-800/80 to-gray-900/80 hover:from-gray-700/80 hover:to-gray-800/80 text-gray-200 hover:text-white border border-gold/20 hover:border-gold/40 rounded-lg font-semibold transition-all duration-300 text-sm backdrop-blur-sm hover:shadow-lg transform hover:scale-105"
+                          className="flex-1 px-4 py-3 bg-gradient-to-r from-gray-700/60 to-gray-800/60 hover:from-gray-600/60 hover:to-gray-700/60 text-gray-200 hover:text-white rounded-lg font-semibold transition-all duration-300 text-sm backdrop-blur-sm hover:shadow-lg transform hover:scale-105"
                         >
                           View Details
                         </button>
@@ -360,7 +348,7 @@ export default function EventsSection({ maxEvents = 6 }) {
                         {isUpcoming(evt.date) && (
                           <button 
                             onClick={(e) => handleRegister(evt, e)}
-                            className="flex-1 px-4 py-3 bg-gradient-to-r from-gold/20 to-yellow-500/20 hover:from-gold/30 hover:to-yellow-500/30 text-gold hover:text-yellow-300 border border-gold/40 hover:border-gold/60 rounded-lg font-semibold transition-all duration-300 text-sm backdrop-blur-sm hover:shadow-lg hover:shadow-gold/25 transform hover:scale-105"
+                            className="flex-1 px-4 py-3 bg-gradient-to-r from-gold/20 to-yellow-500/20 hover:from-gold/30 hover:to-yellow-500/30 text-gold hover:text-yellow-300 rounded-lg font-semibold transition-all duration-300 text-sm backdrop-blur-sm hover:shadow-lg hover:shadow-gold/25 transform hover:scale-105"
                           >
                             Register
                           </button>
@@ -373,24 +361,6 @@ export default function EventsSection({ maxEvents = 6 }) {
                   </div>
                 </div>
               ))}
-            </div>
-
-            {/* Enhanced View All Events Button */}
-            <div className="text-center mt-16">
-              <Link 
-                href="/events"
-                className="inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-gray-900/40 to-black/20 hover:from-gray-800/50 hover:to-gray-900/30 text-gold hover:text-yellow-300 border-2 border-gold/40 hover:border-gold/60 rounded-xl font-bold transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 backdrop-blur-sm hover:shadow-2xl hover:shadow-gold/25 group text-lg"
-              >
-                <span>View All Events</span>
-                <svg 
-                  className="w-6 h-6 transition-transform duration-300 group-hover:translate-x-2" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </Link>
             </div>
           </div>
         </div>
@@ -440,10 +410,10 @@ export default function EventsSection({ maxEvents = 6 }) {
               )}
 
               <div className="mb-6">
-                <span className={`inline-block px-4 py-2 rounded-full text-sm font-semibold border backdrop-blur-sm ${
+                <span className={`inline-block px-4 py-2 rounded-full text-sm font-semibold backdrop-blur-sm ${
                   isUpcoming(selectedEvent.date) 
-                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50 shadow-lg shadow-emerald-500/25' 
-                    : 'bg-gold/20 text-gold border-gold/50 shadow-lg shadow-gold/25'
+                    ? 'bg-emerald-500/20 text-emerald-300 shadow-lg shadow-emerald-500/25' 
+                    : 'bg-gold/20 text-gold shadow-lg shadow-gold/25'
                 }`}>
                   {isUpcoming(selectedEvent.date) ? '🔴 Upcoming Event' : '📅 Past Event'}
                 </span>
@@ -494,7 +464,7 @@ export default function EventsSection({ maxEvents = 6 }) {
               <div className="flex flex-col sm:flex-row gap-4">
                 <button 
                   onClick={closeModal}
-                  className="flex-1 px-6 py-3 bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 hover:text-white border border-gray-600/50 hover:border-gray-500/50 rounded-lg font-semibold transition-all duration-300 backdrop-blur-sm"
+                  className="flex-1 px-6 py-3 bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 hover:text-white rounded-lg font-semibold transition-all duration-300 backdrop-blur-sm"
                 >
                   Close
                 </button>
@@ -504,7 +474,7 @@ export default function EventsSection({ maxEvents = 6 }) {
                       e.stopPropagation();
                       handleRegister(selectedEvent, e);
                     }}
-                    className="flex-1 px-6 py-3 bg-gradient-to-r from-gold/20 to-yellow-500/20 hover:from-gold/30 hover:to-yellow-500/30 text-gold hover:text-yellow-300 border border-gold/40 hover:border-gold/60 rounded-lg font-semibold transition-all duration-300 text-center backdrop-blur-sm hover:shadow-lg hover:shadow-gold/25"
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-gold/20 to-yellow-500/20 hover:from-gold/30 hover:to-yellow-500/30 text-gold hover:text-yellow-300 rounded-lg font-semibold transition-all duration-300 text-center backdrop-blur-sm hover:shadow-lg hover:shadow-gold/25"
                   >
                     Register Now
                   </button>
