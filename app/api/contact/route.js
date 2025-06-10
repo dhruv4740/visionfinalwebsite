@@ -2,6 +2,28 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
+// GET method to fetch contacts (for admin dashboard)
+export async function GET() {
+  try {
+    const filePath = path.join(process.cwd(), 'data', 'contacts.json');
+    
+    if (!fs.existsSync(filePath)) {
+      return NextResponse.json({ success: true, contacts: [] });
+    }
+
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    const contacts = JSON.parse(fileContent);
+    
+    // Sort by timestamp, newest first
+    contacts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    return NextResponse.json({ success: true, contacts });
+  } catch (error) {
+    console.error('Error fetching contacts:', error);
+    return NextResponse.json({ success: false, contacts: [] }, { status: 500 });
+  }
+}
+
 export async function POST(request) {
   try {
     const { name, email, message } = await request.json();

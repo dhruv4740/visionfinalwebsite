@@ -80,7 +80,7 @@ export default function AdminDashboard() {
       const [eventsRes, registrationsRes, applicationsRes, contactsRes] = await Promise.allSettled([
         fetch('/api/admin/events'),
         fetch('/api/events/register'),
-        fetch('/api/applications'),
+        fetch('/api/apply'),
         fetch('/api/contact')
       ]);
 

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 
 const navigation = [
-  { name: 'Home', href: '#home' },
+  { name: 'Home', href: '#hero' }, // ✅ Changed to #hero to match logo
   { name: 'About', href: '#about' },
   { name: 'Events', href: '#events' },
   { name: 'Team', href: '#team' },
@@ -37,22 +37,34 @@ export default function Header() {
   const handleNavClick = (e, href) => {
     e.preventDefault();
     
-    // If we're not on the homepage, navigate there first
-    if (pathname !== '/') {
-      router.push('/');
-      
-      // Wait for navigation to complete before scrolling
-      setTimeout(() => {
+    // If clicking home/hero, scroll to top
+    if (href === '#hero') {
+      if (pathname !== '/') {
+        router.push('/');
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 300);
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } else {
+      // If we're not on the homepage, navigate there first
+      if (pathname !== '/') {
+        router.push('/');
+        
+        // Wait for navigation to complete before scrolling
+        setTimeout(() => {
+          const element = document.querySelector(href);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 300);
+      } else {
+        // We're already on the homepage, just scroll to the section
         const element = document.querySelector(href);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth' });
         }
-      }, 300);
-    } else {
-      // We're already on the homepage, just scroll to the section
-      const element = document.querySelector(href);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
       }
     }
     

@@ -241,37 +241,107 @@ export default function TeamSection() {
 
   const currentTeam = teams[selectedYear];
 
-  // Member Card Component (Leaf)
-  const MemberCard = ({ member, isHead = false }) => (
-    <div className="relative group mb-4">
-      <div className={`bg-gradient-to-br from-gray-900/80 to-black/60 border-2 ${
-        isHead ? 'border-gold/70' : 'border-gray-600/50'
-      } rounded-lg p-4 backdrop-blur-sm hover:scale-105 hover:border-gold/60 transition-all duration-300 w-56 min-h-[160px] flex flex-col`}>
-        {/* Member Avatar */}
-        <div className={`w-12 h-12 mx-auto rounded-full ${
-          isHead ? 'bg-gradient-to-br from-gold/30 to-yellow-500/30' : 'bg-gradient-to-br from-gray-600/30 to-gray-700/30'
-        } mb-3 flex items-center justify-center border-2 ${
-          isHead ? 'border-gold/60' : 'border-gray-500/50'
-        }`}>
-          <div className={`w-5 h-5 rounded-full ${isHead ? 'bg-gold' : 'bg-gray-300'}`}></div>
-        </div>
-        
-        {/* Member Info */}
-        <div className="text-center flex-1 flex flex-col justify-between">
-          <div>
-            <h5 className={`text-sm font-bold mb-2 ${isHead ? 'text-gold' : 'text-white'}`}>
-              {member.name}
-            </h5>
-            <p className={`text-xs font-semibold mb-2 ${isHead ? 'text-gold-light' : 'text-gray-300'}`}>
-              {member.role}
-            </p>
-            <p className="text-gray-400 text-xs mb-2">{member.year}</p>
+  // Team Structure Diagram Component
+  const TeamStructure = () => (
+    <div className="mb-20">
+      <h3 className="text-3xl font-bold text-gold text-center mb-12">Team Structure</h3>
+      <div className="max-w-6xl mx-auto">
+        {/* Leadership Level */}
+        <div className="flex justify-center mb-8">
+          <div className="text-center">
+            <div className="bg-gradient-to-br from-gold/40 to-yellow-500/40 border-2 border-gold rounded-xl px-6 py-4 mb-4">
+              <h4 className="text-lg font-bold text-gold">Leadership Team</h4>
+              <p className="text-xs text-gold/80">Captain, Vice Captain, Project Manager, Treasurer</p>
+            </div>
           </div>
-          <p className="text-gray-500 text-xs leading-relaxed line-clamp-3">{member.bio}</p>
+        </div>
+
+        {/* Connection Line */}
+        <div className="flex justify-center mb-8">
+          <div className="w-px h-12 bg-gold/60"></div>
+        </div>
+
+        {/* Department Heads Level */}
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-8">
+          <div className="text-center">
+            <div className="bg-gradient-to-br from-blue-600/30 to-blue-500/30 border-2 border-blue-400/70 rounded-xl px-4 py-3">
+              <h5 className="text-sm font-bold text-blue-300">Tech Team</h5>
+              <p className="text-xs text-blue-200">AR/VR Development</p>
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="bg-gradient-to-br from-purple-600/30 to-purple-500/30 border-2 border-purple-400/70 rounded-xl px-4 py-3">
+              <h5 className="text-sm font-bold text-purple-300">Creative Team</h5>
+              <p className="text-xs text-purple-200">Design & Media</p>
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="bg-gradient-to-br from-green-600/30 to-green-500/30 border-2 border-green-400/70 rounded-xl px-4 py-3">
+              <h5 className="text-sm font-bold text-green-300">Marketing Team</h5>
+              <p className="text-xs text-green-200">Outreach & Branding</p>
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="bg-gradient-to-br from-orange-600/30 to-orange-500/30 border-2 border-orange-400/70 rounded-xl px-4 py-3">
+              <h5 className="text-sm font-bold text-orange-300">Operations Team</h5>
+              <p className="text-xs text-orange-200">Logistics & Events</p>
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="bg-gradient-to-br from-pink-600/30 to-pink-500/30 border-2 border-pink-400/70 rounded-xl px-4 py-3">
+              <h5 className="text-sm font-bold text-pink-300">PR Team</h5>
+              <p className="text-xs text-pink-200">Public Relations</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Hierarchy Info */}
+        <div className="text-center">
+          <p className="text-gray-400 text-sm">
+            Each team consists of a Head and dedicated team members working collaboratively
+          </p>
         </div>
       </div>
     </div>
   );
+
+  // Member Card Component (Leaf)
+  const MemberCard = ({ member, isHead = false }) => {
+    // Check if it's a leadership role (Captain, Vice Captain, Treasurer)
+    const isLeadership = member.role.toLowerCase().includes('captain') || 
+                        member.role.toLowerCase().includes('treasurer');
+    
+    return (
+      <div className="relative group mb-4">
+        <div className={`bg-gradient-to-br from-gray-900/80 to-black/60 border-2 ${
+          isHead || isLeadership ? 'border-gold/70' : 'border-gray-600/50'
+        } rounded-lg p-4 backdrop-blur-sm hover:scale-105 hover:border-gold/60 transition-all duration-300 w-56 min-h-[160px] flex flex-col`}>
+          {/* Member Avatar */}
+          <div className={`w-12 h-12 mx-auto rounded-full ${
+            isHead || isLeadership ? 'bg-gradient-to-br from-gold/30 to-yellow-500/30' : 'bg-gradient-to-br from-gray-600/30 to-gray-700/30'
+          } mb-3 flex items-center justify-center border-2 ${
+            isHead || isLeadership ? 'border-gold/60' : 'border-gray-500/50'
+          }`}>
+            <div className={`w-5 h-5 rounded-full ${isHead || isLeadership ? 'bg-gold' : 'bg-gray-300'}`}></div>
+          </div>
+          
+          {/* Member Info */}
+          <div className="text-center flex-1 flex flex-col justify-between">
+            <div>
+              <h5 className={`text-sm font-bold mb-2 ${isHead || isLeadership ? 'text-gold' : 'text-white'}`}>
+                {member.name}
+              </h5>
+              <p className={`text-xs font-semibold mb-2 ${isHead || isLeadership ? 'text-gold-light' : 'text-gray-300'}`}>
+                {member.role}
+              </p>
+              <p className="text-gray-400 text-xs mb-2">{member.year}</p>
+            </div>
+            <p className="text-gray-500 text-xs leading-relaxed line-clamp-3">{member.bio}</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   // Team Branch Component with Fixed Height
   const TeamBranch = ({ title, members }) => {
@@ -354,6 +424,9 @@ export default function TeamSection() {
               </div>
             </div>
           </div>
+
+          {/* Team Structure Diagram */}
+          <TeamStructure />
 
           {/* Organizational Chart */}
           <div className="relative max-w-7xl mx-auto">
