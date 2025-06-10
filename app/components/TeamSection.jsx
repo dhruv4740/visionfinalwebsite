@@ -3,8 +3,6 @@ import { useState, useEffect } from "react";
 
 export default function TeamSection() {
   const [selectedYear, setSelectedYear] = useState("2024-2025");
-  const [isVisible, setIsVisible] = useState(false);
-  const [scrollDirection, setScrollDirection] = useState('down');
 
   const teams = {
     "2024-2025": {
@@ -241,150 +239,105 @@ export default function TeamSection() {
     }
   };
 
-  // FIXED: Proper scroll direction tracking with separate effect
-  useEffect(() => {
-    let lastScrollY = window.scrollY;
-    let ticking = false;
-
-    const updateScrollDirection = () => {
-      const currentScrollY = window.scrollY;
-      
-      if (Math.abs(currentScrollY - lastScrollY) < 5) {
-        ticking = false;
-        return;
-      }
-
-      const direction = currentScrollY > lastScrollY ? 'down' : 'up';
-      setScrollDirection(direction);
-      lastScrollY = currentScrollY;
-      ticking = false;
-    };
-
-    const onScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(updateScrollDirection);
-        ticking = true;
-      }
-    };
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  // FIXED: Intersection observer only for visibility
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          setIsVisible(entry.isIntersecting);
-        });
-      },
-      { 
-        threshold: 0.1  ,
-        rootMargin: "0px"
-      }
-    );
-
-    const teamSection = document.getElementById('team');
-    if (teamSection) {
-      observer.observe(teamSection);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  // Handle year change animations
-  useEffect(() => {
-    if (selectedYear && isVisible) {
-      // Force re-animation when year changes
-      setIsVisible(false);
-      setTimeout(() => setIsVisible(true), 50);
-    }
-  }, [selectedYear]);
-
   const currentTeam = teams[selectedYear];
 
-  // FIXED: Calculate delays based on scroll direction
-  const getSectionDelay = (sectionIndex) => {
-    const totalSections = 6; // 0: Leadership, 1: Tech, 2: Creative, 3: Marketing, 4: Operations, 5: PR
-    
-    if (scrollDirection === 'up') {
-      // Reverse order when scrolling up - PR first, Leadership last
-      const reversedIndex = totalSections - 1 - sectionIndex;
-      return reversedIndex * 300; // Faster for reverse
-    } else {
-      // Normal order when scrolling down - Leadership first, PR last
-      return sectionIndex * 500; // Normal spacing
-    }
-  };
-
-  const TeamCard = ({ member, index, sectionDelay = 0 }) => {
-    return (
-      <div
-        className={`team-card group p-6 bg-gradient-to-br from-gray-900/40 to-black/20 rounded-2xl border border-gold/30 hover:border-gold/60 shadow-xl hover:shadow-gold/20 transition-all duration-500 transform hover:-translate-y-2 backdrop-blur-sm ${
-          isVisible ? 'animate-in' : ''
-        }`}
-        style={{ 
-          animationDelay: isVisible ? `${sectionDelay + (index * 100)}ms` : '0ms'
-        }}
-      >
-        <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-gold/20 to-gold-light/20 mb-4 flex items-center justify-center border-2 border-gold/40 group-hover:border-gold/70 transition-all duration-300 group-hover:scale-110">
-          <span className="text-gold text-3xl group-hover:scale-110 transition-transform duration-300">👤</span>
+  // Member Card Component (Leaf)
+  const MemberCard = ({ member, isHead = false }) => (
+    <div className="relative group mb-4">
+      <div className={`bg-gradient-to-br from-gray-900/80 to-black/60 border-2 ${
+        isHead ? 'border-gold/70' : 'border-gray-600/50'
+      } rounded-lg p-4 backdrop-blur-sm hover:scale-105 hover:border-gold/60 transition-all duration-300 w-56 min-h-[160px] flex flex-col`}>
+        {/* Member Avatar */}
+        <div className={`w-12 h-12 mx-auto rounded-full ${
+          isHead ? 'bg-gradient-to-br from-gold/30 to-yellow-500/30' : 'bg-gradient-to-br from-gray-600/30 to-gray-700/30'
+        } mb-3 flex items-center justify-center border-2 ${
+          isHead ? 'border-gold/60' : 'border-gray-500/50'
+        }`}>
+          <div className={`w-5 h-5 rounded-full ${isHead ? 'bg-gold' : 'bg-gray-300'}`}></div>
         </div>
-        <h3 className="text-xl font-bold text-gold mb-1 group-hover:text-gold-light transition-colors duration-300">
-          {member.name}
-        </h3>
-        <p className="text-gold-light mb-1 font-semibold group-hover:text-gold transition-colors duration-300">
-          {member.role}
-        </p>
-        <p className="text-gray-300 mb-3 text-sm font-medium group-hover:text-gray-200 transition-colors duration-300">
-          {member.year}
-        </p>
-        <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300 leading-relaxed text-sm">
-          {member.bio}
-        </p>
-      </div>
-    );
-  };
-
-  const TeamSubSection = ({ title, members, gridCols = "sm:grid-cols-2 lg:grid-cols-3", sectionIndex }) => (
-    <div className="team-section mb-20">
-      <h3 className="section-title text-3xl font-bold text-gold text-center mb-12">
-        {title}
-      </h3>
-      <div className={`grid ${gridCols} gap-6 ${gridCols.includes('lg:grid-cols-2') ? 'max-w-2xl mx-auto' : ''}`}>
-        {members.map((member, i) => (
-          <TeamCard 
-            key={`${selectedYear}-${title}-${i}`} 
-            member={member} 
-            index={i}
-            sectionDelay={getSectionDelay(sectionIndex)}
-          />
-        ))}
+        
+        {/* Member Info */}
+        <div className="text-center flex-1 flex flex-col justify-between">
+          <div>
+            <h5 className={`text-sm font-bold mb-2 ${isHead ? 'text-gold' : 'text-white'}`}>
+              {member.name}
+            </h5>
+            <p className={`text-xs font-semibold mb-2 ${isHead ? 'text-gold-light' : 'text-gray-300'}`}>
+              {member.role}
+            </p>
+            <p className="text-gray-400 text-xs mb-2">{member.year}</p>
+          </div>
+          <p className="text-gray-500 text-xs leading-relaxed line-clamp-3">{member.bio}</p>
+        </div>
       </div>
     </div>
   );
 
+  // Team Branch Component with Fixed Height
+  const TeamBranch = ({ title, members }) => {
+    const head = members.find(m => m.role.toLowerCase().includes('head') || m.role.toLowerCase().includes('captain'));
+    const teamMembers = members.filter(m => !m.role.toLowerCase().includes('head') && !m.role.toLowerCase().includes('captain'));
+
+    return (
+      <div className="relative flex flex-col items-center min-h-[600px]">
+        {/* Team Title (Branch Node) */}
+        <div className="flex justify-center mb-6">
+          <div className="bg-gradient-to-br from-gold/30 to-yellow-500/30 border-2 border-gold/70 rounded-xl px-6 py-4 backdrop-blur-sm shadow-lg min-w-[140px]">
+            <h4 className="text-base font-bold text-gold text-center whitespace-nowrap">
+              {title}
+            </h4>
+          </div>
+        </div>
+
+        {/* Connection line from branch title */}
+        <div className="w-px h-8 bg-gold/60 mb-4"></div>
+
+        {/* Head Member (if exists) */}
+        {head && (
+          <div className="mb-6">
+            <MemberCard member={head} isHead={true} />
+          </div>
+        )}
+
+        {/* Connection line to team members */}
+        {teamMembers.length > 0 && head && (
+          <div className="w-px h-6 bg-gold/40 mb-4"></div>
+        )}
+
+        {/* Team Members in Vertical Layout */}
+        {teamMembers.length > 0 && (
+          <div className="flex flex-col items-center space-y-4">
+            {teamMembers.map((member, index) => (
+              <div key={index} className="relative">
+                {/* Connection line to each member */}
+                {index > 0 && (
+                  <div className="absolute -top-4 left-1/2 w-px h-4 bg-gold/30 -translate-x-1/2"></div>
+                )}
+                <MemberCard member={member} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <>
       {/* Team Section */}
-      <section 
-        id="team" 
-        className="py-32 relative overflow-hidden"
-      >
-  
+      <section id="team" className="py-32 relative overflow-hidden">
         <div className="container mx-auto px-6 relative z-10">
           <div className="text-center mb-20">
-            <h2 className="team-title text-5xl md:text-6xl font-bold text-gold mb-8">
+            <h2 className="text-5xl md:text-6xl font-bold text-gold mb-8">
               Our Team
             </h2>
-            <p className="team-subtitle text-gray-200 text-lg max-w-2xl mx-auto mb-8">
+            <p className="text-gray-200 text-lg max-w-2xl mx-auto mb-8">
               Meet the passionate individuals driving innovation in AR/VR technology
             </p>
             
             {/* Year Selection */}
-            <div className="year-selector flex justify-center mb-8">
-              <div className="bg-gray-900/40 rounded-xl p-2 border border-gold/30 backdrop-blur-sm">
+            <div className="flex justify-center mb-12">
+              <div className="bg-gray-900/60 rounded-xl p-2 border border-gold/30 backdrop-blur-sm">
                 {Object.keys(teams).map((year) => (
                   <button
                     key={year}
@@ -402,75 +355,70 @@ export default function TeamSection() {
             </div>
           </div>
 
-          {/* Team Content with unique key to force re-render */}
-          <div key={`${selectedYear}-${isVisible}-${scrollDirection}`}>
-            {/* Leadership - Section 0 */}
-            <TeamSubSection 
-              title="Leadership" 
-              members={currentTeam.leadership} 
-              gridCols="sm:grid-cols-2 lg:grid-cols-4"
-              sectionIndex={0}
-            />
-
-            {/* Tech Team - Section 1 */}
-            <TeamSubSection 
-              title="Tech Team" 
-              members={currentTeam.techTeam} 
-              gridCols="sm:grid-cols-2 lg:grid-cols-3"
-              sectionIndex={1}
-            />
-
-            {/* Creative Team - Section 2 */}
-            <TeamSubSection 
-              title="Creative Team" 
-              members={currentTeam.creativeTeam} 
-              gridCols="sm:grid-cols-2 lg:grid-cols-3"
-              sectionIndex={2}
-            />
-
-            {/* Marketing Team - Section 3 */}
-            <TeamSubSection 
-              title="Marketing Team" 
-              members={currentTeam.marketingTeam} 
-              gridCols="sm:grid-cols-2 lg:grid-cols-2"
-              sectionIndex={3}
-            />
-
-            {/* Operations Team - Section 4 */}
-            <TeamSubSection 
-              title="Operations Team" 
-              members={currentTeam.operationsTeam} 
-              gridCols="sm:grid-cols-2 lg:grid-cols-4"
-              sectionIndex={4}
-            />
-
-            {/* PR Team - Section 5 */}
-            <div className="team-section mb-12">
-              <h3 className="section-title text-3xl font-bold text-gold text-center mb-12">
-                Public Relations Team
-              </h3>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {currentTeam.prTeam.map((member, i) => (
-                  <TeamCard 
-                    key={`${selectedYear}-pr-${i}`} 
-                    member={member} 
-                    index={i}
-                    sectionDelay={getSectionDelay(5)}
-                  />
-                ))}
+          {/* Organizational Chart */}
+          <div className="relative max-w-7xl mx-auto">
+            {/* Root Node */}
+            <div className="flex justify-center mb-16">
+              <div className="bg-gradient-to-br from-gold/40 to-yellow-500/40 border-3 border-gold rounded-2xl px-8 py-6 backdrop-blur-sm shadow-2xl">
+                <h3 className="text-3xl font-bold text-gold text-center">
+                  Team Vision {selectedYear}
+                </h3>
               </div>
+            </div>
+
+            {/* Main trunk line */}
+            <div className="absolute left-1/2 top-28 w-px h-16 bg-gradient-to-b from-gold to-gold/60 -translate-x-1/2"></div>
+
+            {/* Leadership (Top Level) */}
+            <div className="mb-20 flex justify-center">
+              <TeamBranch 
+                title="Leadership" 
+                members={currentTeam.leadership} 
+              />
+            </div>
+
+            {/* Department Branches - Using Grid for Better Control */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 justify-items-center items-start">
+              {/* Tech Team */}
+              <TeamBranch 
+                title="Tech Team" 
+                members={currentTeam.techTeam} 
+              />
+
+              {/* Creative Team */}
+              <TeamBranch 
+                title="Creative Team" 
+                members={currentTeam.creativeTeam} 
+              />
+
+              {/* Marketing Team */}
+              <TeamBranch 
+                title="Marketing Team" 
+                members={currentTeam.marketingTeam} 
+              />
+
+              {/* Operations Team */}
+              <TeamBranch 
+                title="Operations Team" 
+                members={currentTeam.operationsTeam} 
+              />
+
+              {/* PR Team */}
+              <TeamBranch 
+                title="Public Relations" 
+                members={currentTeam.prTeam} 
+              />
             </div>
 
             {/* Show note for 2025-2026 */}
             {selectedYear === "2025-2026" && (
-              <div className="team-section text-center mt-12">
-                <div className={`bg-gray-900/60 border border-gold/30 rounded-lg p-6 max-w-md mx-auto backdrop-blur-sm transform hover:scale-105 transition-transform duration-300 ${isVisible ? 'animate-in' : ''}`}
-                  style={{ 
-                    animationDelay: isVisible ? `${getSectionDelay(5) + 400}ms` : '0ms'
-                  }}
-                >
-                  <p className="text-gold font-semibold mb-2">Coming Soon!</p>
-                  <p className="text-gray-300 text-sm">
+              <div className="text-center mt-20">
+                <div className="bg-gray-900/80 border-2 border-gold/50 rounded-xl p-8 max-w-md mx-auto backdrop-blur-sm">
+                  <div className="w-12 h-12 mx-auto mb-4 bg-gold/20 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-gold/60 rounded-full"></div>
+                  </div>
+                  <p className="text-gold font-semibold text-lg mb-2">Coming Soon!</p>
+                  <p className="text-gray-300">
                     The 2025-2026 team structure will be announced at the beginning of the new academic year.
                   </p>
                 </div>
@@ -480,74 +428,56 @@ export default function TeamSection() {
         </div>
       </section>
 
-      {/* Enhanced animations */}
+      {/* Enhanced Styles */}
       <style jsx global>{`
-        /* Base state for team cards - start invisible */
-        .team-card {
-          opacity: 0;
-          transform: translateY(30px) scale(0.98);
+        /* Member card hover effects */
+        .group:hover .bg-gradient-to-br {
+          transform: scale(1.05) translateY(-2px);
+          box-shadow: 0 10px 25px rgba(255, 215, 0, 0.2);
         }
 
-        /* Animate in when visible */
-        .team-card.animate-in {
-          animation: slideUpFadeIn 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-        }
-
-        /* Smooth keyframe animation */
-        @keyframes slideUpFadeIn {
-          0% {
-            opacity: 0;
-            transform: translateY(30px) scale(0.98);
-          }
-          80% {
-            opacity: 0.9;
-            transform: translateY(2px) scale(0.995);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-
-        /* Hover effects */
-        .team-card:hover {
-          transform: translateY(-6px) scale(1.01) !important;
-          box-shadow: 0 15px 30px rgba(255, 215, 0, 0.15) !important;
-        }
-
-        .team-card:hover .w-24 {
-          transform: scale(1.05) rotate(3deg);
-        }
-
-        /* Year selector button effects */
-        .year-selector button {
-          position: relative;
+        /* Text utilities */
+        .line-clamp-3 {
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
           overflow: hidden;
         }
 
-        .year-selector button::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
-          transition: left 0.5s;
+        /* Connection lines glow effect */
+        .bg-gold\/60:hover,
+        .bg-gold\/40:hover {
+          background: linear-gradient(to bottom, #ffd700, rgba(255, 215, 0, 0.6));
+          box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
-        .year-selector button:hover::before {
-          left: 100%;
+        /* Root node special effects */
+        .shadow-2xl {
+          box-shadow: 0 25px 50px -12px rgba(255, 215, 0, 0.4);
         }
 
-        /* Fallback for reduced motion */
-        @media (prefers-reduced-motion: reduce) {
-          .team-card {
-            opacity: 1 !important;
-            transform: none !important;
+        /* Responsive adjustments */
+        @media (max-width: 1280px) {
+          .grid-cols-5 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
           }
-          .team-card.animate-in {
-            animation: none !important;
+        }
+
+        @media (max-width: 1024px) {
+          .grid-cols-3 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+          .w-56 {
+            width: 12rem;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .grid-cols-2 {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+          }
+          .w-56 {
+            width: 11rem;
           }
         }
       `}</style>

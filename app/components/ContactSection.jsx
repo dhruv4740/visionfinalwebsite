@@ -98,6 +98,25 @@ export default function ContactSection() {
     }
   };
 
+  // Handle email click
+  const handleEmailClick = () => {
+    const email = "teamvision.engg@somaiya.edu";
+    const subject = "Inquiry from Vision KJSCE Website";
+    const body = "Hello Vision KJSCE Team,\n\nI'm interested in learning more about your AR/VR projects and activities.\n\nBest regards,";
+    
+    const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoLink;
+  };
+
+  // Handle location click
+  const handleLocationClick = () => {
+    // Using KJ Somaiya School of Engineering, Vidyavihar address
+    const address = "KJ Somaiya School of Engineering, Vidyavihar, Mumbai, Maharashtra, India";
+    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+    
+    window.open(googleMapsUrl, '_blank');
+  };
+
   return (
     <section id="contact" className="py-32 animate-on-scroll relative">
       <div className="container mx-auto px-6 relative z-10">
@@ -109,27 +128,36 @@ export default function ContactSection() {
         </div>
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
           <div className="space-y-8">
-            <div className="flex items-start space-x-6 p-6 bg-gradient-to-r from-gray-900/40 to-black/20 rounded-2xl border border-gold/30 backdrop-blur-sm">
-              <div className="p-4 bg-gradient-to-br from-gold/20 to-gold-light/20 rounded-full border border-gold/40">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            {/* Clickable Email Section */}
+            <div 
+              onClick={handleEmailClick}
+              className="flex items-start space-x-6 p-6 bg-gradient-to-r from-gray-900/40 to-black/20 rounded-2xl border border-gold/30 backdrop-blur-sm cursor-pointer hover:border-gold/50 hover:shadow-lg hover:shadow-gold/20 transition-all duration-300 transform hover:scale-105 group"
+            >
+              <div className="p-4 bg-gradient-to-br from-gold/20 to-gold-light/20 rounded-full border border-gold/40 group-hover:bg-gradient-to-br group-hover:from-gold/30 group-hover:to-gold-light/30 transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gold group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                 </svg>
               </div>
               <div>
-                <p className="text-gray-100 font-semibold text-lg">teamvision.engg@somaiya.edu</p>
-                <p className="text-gray-300">General inquiries and collaboration</p>
+                <p className="text-gray-100 font-semibold text-lg group-hover:text-gold transition-colors duration-300">teamvision.engg@somaiya.edu</p>
+                <p className="text-gray-300 group-hover:text-gray-200 transition-colors duration-300">Click to send us an email</p>
               </div>
             </div>
-            <div className="flex items-start space-x-6 p-6 bg-gradient-to-r from-gray-900/40 to-black/20 rounded-2xl border border-gold/30 backdrop-blur-sm">
-              <div className="p-4 bg-gradient-to-br from-gold/20 to-gold-light/20 rounded-full border border-gold/40">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+
+            {/* Clickable Location Section */}
+            <div 
+              onClick={handleLocationClick}
+              className="flex items-start space-x-6 p-6 bg-gradient-to-r from-gray-900/40 to-black/20 rounded-2xl border border-gold/30 backdrop-blur-sm cursor-pointer hover:border-gold/50 hover:shadow-lg hover:shadow-gold/20 transition-all duration-300 transform hover:scale-105 group"
+            >
+              <div className="p-4 bg-gradient-to-br from-gold/20 to-gold-light/20 rounded-full border border-gold/40 group-hover:bg-gradient-to-br group-hover:from-gold/30 group-hover:to-gold-light/30 transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gold group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
               </div>
               <div>
-                <p className="text-gray-100 font-semibold text-lg">KJ Somaiya School of Engineering</p>
-                <p className="text-gray-300">Vidyavihar, Mumbai, India</p>
+                <p className="text-gray-100 font-semibold text-lg group-hover:text-gold transition-colors duration-300">KJ Somaiya School of Engineering</p>
+                <p className="text-gray-300 group-hover:text-gray-200 transition-colors duration-300">Click to view on Google Maps</p>
               </div>
             </div>
           </div>
