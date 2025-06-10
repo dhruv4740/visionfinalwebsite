@@ -195,7 +195,7 @@ export default function EventRegistrationModal({ event, isOpen, onClose, onSucce
                     <option value="FY">First Year</option>
                     <option value="SY">Second Year</option>
                     <option value="TY">Third Year</option>
-                    <option value="LY">Final Year</option>
+                    <option value="LY">Last Year</option>
                   </select>
                 </div>
 

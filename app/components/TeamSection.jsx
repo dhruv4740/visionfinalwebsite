@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function TeamSection() {
   const [selectedYear, setSelectedYear] = useState("2024-2025");
@@ -307,9 +307,10 @@ export default function TeamSection() {
 
   // Member Card Component (Leaf)
   const MemberCard = ({ member, isHead = false }) => {
-    // Check if it's a leadership role (Captain, Vice Captain, Treasurer)
+    // Check if it's a leadership role (Captain, Vice Captain, Treasurer, Manager)
     const isLeadership = member.role.toLowerCase().includes('captain') || 
-                        member.role.toLowerCase().includes('treasurer');
+                        member.role.toLowerCase().includes('treasurer') ||
+                        member.role.toLowerCase().includes('manager');
     
     return (
       <div className="relative group mb-4">
@@ -343,13 +344,49 @@ export default function TeamSection() {
     );
   };
 
+  // Leadership Section Component - Vertical Layout
+  const LeadershipSection = ({ members }) => {
+    return (
+      <div className="relative mb-20 flex flex-col items-center">
+        {/* Leadership Cards Vertically Stacked */}
+        <div className="flex flex-col items-center space-y-6 mb-8">
+          {members.map((member, index) => (
+            <div key={index} className="relative">
+              <MemberCard member={member} isHead={true} />
+              {/* Connection line between leadership members */}
+              {index < members.length - 1 && (
+                <div className="absolute -bottom-3 left-1/2 w-px h-6 bg-white -translate-x-1/2"></div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Single line emerging from bottom of leadership */}
+        <div className="w-px h-12 bg-white mb-8"></div>
+
+        {/* Horizontal line connecting to all team headers - responsive positioning */}
+        <div className="relative w-full">
+          {/* Main horizontal line - responsive width */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 w-4/5 h-px bg-white"></div>
+          
+          {/* Vertical drop lines for each team - positioned using CSS Grid fractions */}
+          <div className="absolute w-px h-8 bg-white" style={{ left: '10%' }}></div>
+          <div className="absolute w-px h-8 bg-white" style={{ left: '30%' }}></div>
+          <div className="absolute left-1/2 transform -translate-x-1/2 w-px h-8 bg-white"></div>
+          <div className="absolute w-px h-8 bg-white" style={{ left: '70%' }}></div>
+          <div className="absolute w-px h-8 bg-white" style={{ left: '90%' }}></div>
+        </div>
+      </div>
+    );
+  };
+
   // Team Branch Component with Fixed Height
   const TeamBranch = ({ title, members }) => {
     const head = members.find(m => m.role.toLowerCase().includes('head') || m.role.toLowerCase().includes('captain'));
     const teamMembers = members.filter(m => !m.role.toLowerCase().includes('head') && !m.role.toLowerCase().includes('captain'));
 
     return (
-      <div className="relative flex flex-col items-center min-h-[600px]">
+      <div className="relative flex flex-col items-center min-h-[600px] pt-8">
         {/* Team Title (Branch Node) */}
         <div className="flex justify-center mb-6">
           <div className="bg-gradient-to-br from-gold/30 to-yellow-500/30 border-2 border-gold/70 rounded-xl px-6 py-4 backdrop-blur-sm shadow-lg min-w-[140px]">
@@ -359,8 +396,8 @@ export default function TeamSection() {
           </div>
         </div>
 
-        {/* Connection line from branch title */}
-        <div className="w-px h-8 bg-gold/60 mb-4"></div>
+        {/* Connection line from team header to team head */}
+        <div className="w-px h-8 bg-white mb-4"></div>
 
         {/* Head Member (if exists) */}
         {head && (
@@ -371,7 +408,7 @@ export default function TeamSection() {
 
         {/* Connection line to team members */}
         {teamMembers.length > 0 && head && (
-          <div className="w-px h-6 bg-gold/40 mb-4"></div>
+          <div className="w-px h-6 bg-white mb-4"></div>
         )}
 
         {/* Team Members in Vertical Layout */}
@@ -381,7 +418,7 @@ export default function TeamSection() {
               <div key={index} className="relative">
                 {/* Connection line to each member */}
                 {index > 0 && (
-                  <div className="absolute -top-4 left-1/2 w-px h-4 bg-gold/30 -translate-x-1/2"></div>
+                  <div className="absolute -top-4 left-1/2 w-px h-4 bg-white -translate-x-1/2"></div>
                 )}
                 <MemberCard member={member} />
               </div>
@@ -439,48 +476,53 @@ export default function TeamSection() {
               </div>
             </div>
 
-            {/* Main trunk line */}
-            <div className="absolute left-1/2 top-28 w-px h-16 bg-gradient-to-b from-gold to-gold/60 -translate-x-1/2"></div>
+            {/* Main trunk line from root to leadership */}
+            <div className="absolute left-1/2 top-28 w-px h-16 bg-white -translate-x-1/2"></div>
 
-            {/* Leadership (Top Level) */}
-            <div className="mb-20 flex justify-center">
-              <TeamBranch 
-                title="Leadership" 
-                members={currentTeam.leadership} 
-              />
-            </div>
+            {/* Leadership Section with Vertical Layout and Connection Lines */}
+            <LeadershipSection members={currentTeam.leadership} />
 
-            {/* Department Branches - Using Grid for Better Control */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 justify-items-center items-start">
+            {/* Department Branches - Using Flexbox for Better Alignment */}
+            <div className="flex justify-between max-w-6xl mx-auto gap-4">
               {/* Tech Team */}
-              <TeamBranch 
-                title="Tech Team" 
-                members={currentTeam.techTeam} 
-              />
+              <div className="flex-1 flex justify-center">
+                <TeamBranch 
+                  title="Tech Team" 
+                  members={currentTeam.techTeam} 
+                />
+              </div>
 
               {/* Creative Team */}
-              <TeamBranch 
-                title="Creative Team" 
-                members={currentTeam.creativeTeam} 
-              />
+              <div className="flex-1 flex justify-center">
+                <TeamBranch 
+                  title="Creative Team" 
+                  members={currentTeam.creativeTeam} 
+                />
+              </div>
 
               {/* Marketing Team */}
-              <TeamBranch 
-                title="Marketing Team" 
-                members={currentTeam.marketingTeam} 
-              />
+              <div className="flex-1 flex justify-center">
+                <TeamBranch 
+                  title="Marketing Team" 
+                  members={currentTeam.marketingTeam} 
+                />
+              </div>
 
               {/* Operations Team */}
-              <TeamBranch 
-                title="Operations Team" 
-                members={currentTeam.operationsTeam} 
-              />
+              <div className="flex-1 flex justify-center">
+                <TeamBranch 
+                  title="Operations Team" 
+                  members={currentTeam.operationsTeam} 
+                />
+              </div>
 
               {/* PR Team */}
-              <TeamBranch 
-                title="Public Relations" 
-                members={currentTeam.prTeam} 
-              />
+              <div className="flex-1 flex justify-center">
+                <TeamBranch 
+                  title="Public Relations" 
+                  members={currentTeam.prTeam} 
+                />
+              </div>
             </div>
 
             {/* Show note for 2025-2026 */}
@@ -529,26 +571,34 @@ export default function TeamSection() {
           box-shadow: 0 25px 50px -12px rgba(255, 215, 0, 0.4);
         }
 
-        /* Responsive adjustments */
-        @media (max-width: 1280px) {
-          .grid-cols-5 {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-          }
-        }
-
+        /* Responsive adjustments for mobile */
         @media (max-width: 1024px) {
-          .grid-cols-3 {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+          .flex.justify-between {
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
           }
+          
+          .flex-1 {
+            width: 100%;
+            max-width: 300px;
+          }
+          
+          /* Hide horizontal connector lines on mobile */
+          .absolute.w-px.h-8 {
+            display: none;
+          }
+          
+          .absolute.h-px {
+            display: none;
+          }
+          
           .w-56 {
             width: 12rem;
           }
         }
 
         @media (max-width: 768px) {
-          .grid-cols-2 {
-            grid-template-columns: repeat(1, minmax(0, 1fr));
-          }
           .w-56 {
             width: 11rem;
           }
