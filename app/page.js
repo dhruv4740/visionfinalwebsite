@@ -35,10 +35,10 @@ export default function Home() {
   const closeModal = () => setIsModalOpen(false);
 
   return (
-    <div className="font-sans text-white overflow-x-hidden relative min-h-screen flex flex-col">
+    <div className="font-sans text-white overflow-x-hidden relative min-h-screen">
       <Background />
 
-      <div className="relative z-10 flex-1 flex flex-col">
+      <div className="relative z-10">
         <Header />
         <ApplicationModal isOpen={isModalOpen} onClose={closeModal} />
 
@@ -67,16 +67,14 @@ export default function Home() {
             </div>
           </div>
         </section>
-       
-      </div>
 
-      <Footer />
+        <Footer />
+      </div>
 
       {/* Global Styles */}
       <style jsx global>{`
         html, body, #__next, .font-sans {
           min-height: 100%;
-          height: 100%;
         }
         :root {
           --gold: #B8860B;

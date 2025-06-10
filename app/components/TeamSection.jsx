@@ -5,7 +5,7 @@ export default function TeamSection() {
   const [selectedYear, setSelectedYear] = useState("2024-2025");
 
   const teams = {
-    "2024-2025": {
+    "2024-2025": {  
       leadership: [
         { 
           name: "Deon Menezes", 

@@ -11,37 +11,11 @@ export default function Footer() {
             alt="Vision KJSCE Logo"
             className="h-8 w-8 rounded-full border-2 border-gold shadow-lg mb-1 transition-transform duration-200 hover:scale-110 hover:shadow-gold"style={{ color: '#FFD700' }}
           />
-          <span className="text-lg font-bold" style={{ color: '#FFD700' }}>Vision KJSCE</span>
+          <span className="text-lg font-bold" style={{ color: '#FFD700' }}>Vision KJSSE</span>
           <span className="text-xs text-gray-400">Empowering Innovation</span>
         </div>
 
-        {/* Quick Links */}
-        <div className="flex flex-row items-center justify-center gap-4 md:w-1/3 order-2 md:order-none">
-          <Link
-            href="/"
-            className="text-gold hover:underline text-sm transition-colors duration-200 hover:text-white hover:scale-110 transform"
-          >
-            Home
-          </Link>
-          <Link
-            href="/team"
-            className="text-gold hover:underline text-sm transition-colors duration-200 hover:text-white hover:scale-110 transform"
-          >
-            Team
-          </Link>
-          <Link
-            href="/events"
-            className="text-gold hover:underline text-sm transition-colors duration-200 hover:text-white hover:scale-110 transform"
-          >
-            Events
-          </Link>
-          <Link
-            href="/contact"
-            className="text-gold hover:underline text-sm transition-colors duration-200 hover:text-white hover:scale-110 transform"
-          >
-            Contact
-          </Link>
-        </div>
+        
 
         {/* Social Links */}
         <div className="flex flex-col items-center md:items-end md:w-1/3 order-3">
@@ -69,7 +43,7 @@ export default function Footer() {
         </div>
       </div>
       <p className="text-center text-xs text-gold/80 py-2">
-        &copy; {new Date().getFullYear()} Vision KJSCE. All rights reserved.
+        &copy; {new Date().getFullYear()} Vision KJSSE. All rights reserved.
       </p>
     </footer>
   );

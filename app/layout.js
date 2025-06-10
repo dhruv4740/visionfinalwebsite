@@ -1,7 +1,6 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
 import Header from './components/Header';
-import Footer from './components/Footer';
 
 // Configure Inter font
 const inter = Inter({
@@ -15,7 +14,7 @@ export const metadata = {
   title: 'Vision KJSCE',
   description: 'Official website for Vision KJSCE',
   icons: {
-    icon: '/logo.png', // Changed from favicon.ico to logo.png
+    icon: '/logo.png',
   },
 }
 
@@ -23,10 +22,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={inter.variable}>
       <body className={`${inter.className} bg-black text-white`}>
-        <main className="min-h-screen pt-20 pb-8">
-          {children}
-        </main>
-        <Footer />
+        {children}
       </body>
     </html>
   )
