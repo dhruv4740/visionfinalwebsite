@@ -5,6 +5,7 @@ export default function TeamSection() {
   const [selectedYear, setSelectedYear] = useState("2024-2025");
 
   const teams = {
+    // ...existing code...
     "2024-2025": {  
       leadership: [
         { 
@@ -241,54 +242,70 @@ export default function TeamSection() {
 
   const currentTeam = teams[selectedYear];
 
-  // Team Structure Diagram Component
+  // Team Structure Diagram Component with PROPERLY CONNECTED lines
   const TeamStructure = () => (
     <div className="mb-20">
       <h3 className="text-3xl font-bold text-gold text-center mb-12">Team Structure</h3>
       <div className="max-w-6xl mx-auto">
         {/* Leadership Level */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-3">
           <div className="text-center">
-            <div className="bg-gradient-to-br from-gold/40 to-yellow-500/40 border-2 border-gold rounded-xl px-6 py-4 mb-4">
+            <div className="hover-box bg-gradient-to-br from-gold/40 to-yellow-500/40 border-2 border-gold rounded-xl px-6 py-4 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-gold/20">
               <h4 className="text-lg font-bold text-gold">Leadership Team</h4>
               <p className="text-xs text-gold/80">Captain, Vice Captain, Project Manager, Treasurer</p>
             </div>
           </div>
         </div>
 
-        {/* Connection Line */}
-        <div className="flex justify-center mb-8">
-          <div className="w-px h-12 bg-gold/60"></div>
+        {/* Vertical line from Leadership */}
+        <div className="flex justify-center mb-3">
+          <div className="w-1 h-8 bg-gradient-to-b from-gold via-gold/80 to-gold/60 shadow-lg shadow-gold/30 rounded-full"></div>
         </div>
 
-        {/* Department Heads Level */}
+        {/* Horizontal connecting line */}
+        <div className="flex justify-center mb-3">
+          <div className="w-4/5 h-1 bg-gradient-to-r from-transparent via-gold/80 to-transparent rounded-full shadow-lg shadow-gold/20"></div>
+        </div>
+
+        {/* Vertical lines down to teams */}
+        <div className="flex justify-center mb-3">
+          <div className="w-4/5 flex justify-between">
+            <div className="w-1 h-8 bg-gradient-to-b from-gold to-blue-400/80 shadow-lg shadow-blue-400/30 rounded-full"></div>
+            <div className="w-1 h-8 bg-gradient-to-b from-gold to-purple-400/80 shadow-lg shadow-purple-400/30 rounded-full"></div>
+            <div className="w-1 h-8 bg-gradient-to-b from-gold to-green-400/80 shadow-lg shadow-green-400/30 rounded-full"></div>
+            <div className="w-1 h-8 bg-gradient-to-b from-gold to-orange-400/80 shadow-lg shadow-orange-400/30 rounded-full"></div>
+            <div className="w-1 h-8 bg-gradient-to-b from-gold to-pink-400/80 shadow-lg shadow-pink-400/30 rounded-full"></div>
+          </div>
+        </div>
+
+        {/* Department Teams */}
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-8">
           <div className="text-center">
-            <div className="bg-gradient-to-br from-blue-600/30 to-blue-500/30 border-2 border-blue-400/70 rounded-xl px-4 py-3">
+            <div className="hover-box bg-gradient-to-br from-blue-600/30 to-blue-500/30 border-2 border-blue-400/70 rounded-xl px-4 py-3 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-400/20 hover:border-blue-300">
               <h5 className="text-sm font-bold text-blue-300">Tech Team</h5>
               <p className="text-xs text-blue-200">AR/VR Development</p>
             </div>
           </div>
           <div className="text-center">
-            <div className="bg-gradient-to-br from-purple-600/30 to-purple-500/30 border-2 border-purple-400/70 rounded-xl px-4 py-3">
+            <div className="hover-box bg-gradient-to-br from-purple-600/30 to-purple-500/30 border-2 border-purple-400/70 rounded-xl px-4 py-3 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-purple-400/20 hover:border-purple-300">
               <h5 className="text-sm font-bold text-purple-300">Creative Team</h5>
               <p className="text-xs text-purple-200">Design & Media</p>
             </div>
           </div>
           <div className="text-center">
-            <div className="bg-gradient-to-br from-green-600/30 to-green-500/30 border-2 border-green-400/70 rounded-xl px-4 py-3">
+            <div className="hover-box bg-gradient-to-br from-green-600/30 to-green-500/30 border-2 border-green-400/70 rounded-xl px-4 py-3 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-green-400/20 hover:border-green-300">
               <h5 className="text-sm font-bold text-green-300">Marketing Team</h5>
               <p className="text-xs text-green-200">Outreach & Branding</p>
             </div>
           </div>
           <div className="text-center">
-            <div className="bg-gradient-to-br from-orange-600/30 to-orange-500/30 border-2 border-orange-400/70 rounded-xl px-4 py-3">
+            <div className="hover-box bg-gradient-to-br from-orange-600/30 to-orange-500/30 border-2 border-orange-400/70 rounded-xl px-4 py-3 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-orange-400/20 hover:border-orange-300">
               <h5 className="text-sm font-bold text-orange-300">Operations Team</h5>
               <p className="text-xs text-orange-200">Logistics & Events</p>
             </div>
           </div>
           <div className="text-center">
-            <div className="bg-gradient-to-br from-pink-600/30 to-pink-500/30 border-2 border-pink-400/70 rounded-xl px-4 py-3">
+            <div className="hover-box bg-gradient-to-br from-pink-600/30 to-pink-500/30 border-2 border-pink-400/70 rounded-xl px-4 py-3 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-pink-400/20 hover:border-pink-300">
               <h5 className="text-sm font-bold text-pink-300">PR Team</h5>
               <p className="text-xs text-pink-200">Public Relations</p>
             </div>
@@ -314,30 +331,32 @@ export default function TeamSection() {
     
     return (
       <div className="relative group mb-4">
-        <div className={`bg-gradient-to-br from-gray-900/80 to-black/60 border-2 ${
+        <div className={`hover-box bg-gradient-to-br from-gray-900/80 to-black/60 border-2 ${
           isHead || isLeadership ? 'border-gold/70' : 'border-gray-600/50'
-        } rounded-lg p-4 backdrop-blur-sm hover:scale-105 hover:border-gold/60 transition-all duration-300 w-56 min-h-[160px] flex flex-col`}>
+        } rounded-lg p-4 backdrop-blur-sm hover:scale-105 hover:border-gold/60 transition-all duration-300 w-56 min-h-[160px] flex flex-col hover:shadow-xl ${
+          isHead || isLeadership ? 'hover:shadow-gold/20' : 'hover:shadow-white/10'
+        }`}>
           {/* Member Avatar */}
           <div className={`w-12 h-12 mx-auto rounded-full ${
             isHead || isLeadership ? 'bg-gradient-to-br from-gold/30 to-yellow-500/30' : 'bg-gradient-to-br from-gray-600/30 to-gray-700/30'
           } mb-3 flex items-center justify-center border-2 ${
             isHead || isLeadership ? 'border-gold/60' : 'border-gray-500/50'
-          }`}>
-            <div className={`w-5 h-5 rounded-full ${isHead || isLeadership ? 'bg-gold' : 'bg-gray-300'}`}></div>
+          } transition-all duration-300 group-hover:scale-110`}>
+            <div className={`w-5 h-5 rounded-full ${isHead || isLeadership ? 'bg-gold' : 'bg-gray-300'} transition-all duration-300 group-hover:scale-110`}></div>
           </div>
           
           {/* Member Info */}
           <div className="text-center flex-1 flex flex-col justify-between">
             <div>
-              <h5 className={`text-sm font-bold mb-2 ${isHead || isLeadership ? 'text-gold' : 'text-white'}`}>
+              <h5 className={`text-sm font-bold mb-2 ${isHead || isLeadership ? 'text-gold' : 'text-white'} transition-all duration-300 group-hover:text-gold`}>
                 {member.name}
               </h5>
-              <p className={`text-xs font-semibold mb-2 ${isHead || isLeadership ? 'text-gold-light' : 'text-gray-300'}`}>
+              <p className={`text-xs font-semibold mb-2 ${isHead || isLeadership ? 'text-gold-light' : 'text-gray-300'} transition-all duration-300 group-hover:text-gold-light`}>
                 {member.role}
               </p>
-              <p className="text-gray-400 text-xs mb-2">{member.year}</p>
+              <p className="text-gray-400 text-xs mb-2 transition-all duration-300 group-hover:text-gray-300">{member.year}</p>
             </div>
-            <p className="text-gray-500 text-xs leading-relaxed line-clamp-3">{member.bio}</p>
+            <p className="text-gray-500 text-xs leading-relaxed line-clamp-3 transition-all duration-300 group-hover:text-gray-400">{member.bio}</p>
           </div>
         </div>
       </div>
@@ -355,26 +374,32 @@ export default function TeamSection() {
               <MemberCard member={member} isHead={true} />
               {/* Connection line between leadership members */}
               {index < members.length - 1 && (
-                <div className="absolute -bottom-3 left-1/2 w-px h-6 bg-white -translate-x-1/2"></div>
+                <div className="absolute -bottom-3 left-1/2 w-1 h-6 bg-gradient-to-b from-gold to-gold/60 -translate-x-1/2 shadow-sm shadow-gold/20 rounded-full"></div>
               )}
             </div>
           ))}
         </div>
 
         {/* Single line emerging from bottom of leadership */}
-        <div className="w-px h-12 bg-white mb-8"></div>
+        <div className="w-1 h-12 bg-gradient-to-b from-gold to-white mb-8 shadow-sm shadow-gold/20 rounded-full"></div>
 
-        {/* Horizontal line connecting to all team headers - responsive positioning */}
-        <div className="relative w-full">
-          {/* Main horizontal line - responsive width */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 w-4/5 h-px bg-white"></div>
+        {/* Horizontal line connecting to all team headers */}
+        <div className="relative w-full mb-8">
+          {/* Main horizontal line */}
+          <div className="flex justify-center mb-3">
+            <div className="w-4/5 h-1 bg-gradient-to-r from-transparent via-white/80 to-transparent shadow-sm shadow-white/20 rounded-full"></div>
+          </div>
           
-          {/* Vertical drop lines for each team - positioned using CSS Grid fractions */}
-          <div className="absolute w-px h-8 bg-white" style={{ left: '10%' }}></div>
-          <div className="absolute w-px h-8 bg-white" style={{ left: '30%' }}></div>
-          <div className="absolute left-1/2 transform -translate-x-1/2 w-px h-8 bg-white"></div>
-          <div className="absolute w-px h-8 bg-white" style={{ left: '70%' }}></div>
-          <div className="absolute w-px h-8 bg-white" style={{ left: '90%' }}></div>
+          {/* Vertical drop lines for each team */}
+          <div className="flex justify-center">
+            <div className="w-4/5 flex justify-between">
+              <div className="w-1 h-8 bg-gradient-to-b from-white to-blue-400/60 shadow-sm shadow-blue-400/20 rounded-full"></div>
+              <div className="w-1 h-8 bg-gradient-to-b from-white to-purple-400/60 shadow-sm shadow-purple-400/20 rounded-full"></div>
+              <div className="w-1 h-8 bg-gradient-to-b from-white to-green-400/60 shadow-sm shadow-green-400/20 rounded-full"></div>
+              <div className="w-1 h-8 bg-gradient-to-b from-white to-orange-400/60 shadow-sm shadow-orange-400/20 rounded-full"></div>
+              <div className="w-1 h-8 bg-gradient-to-b from-white to-pink-400/60 shadow-sm shadow-pink-400/20 rounded-full"></div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -386,18 +411,18 @@ export default function TeamSection() {
     const teamMembers = members.filter(m => !m.role.toLowerCase().includes('head') && !m.role.toLowerCase().includes('captain'));
 
     return (
-      <div className="relative flex flex-col items-center min-h-[600px] pt-8">
+      <div className="relative flex flex-col items-center min-h-[600px] pt-2">
         {/* Team Title (Branch Node) */}
         <div className="flex justify-center mb-6">
-          <div className="bg-gradient-to-br from-gold/30 to-yellow-500/30 border-2 border-gold/70 rounded-xl px-6 py-4 backdrop-blur-sm shadow-lg min-w-[140px]">
-            <h4 className="text-base font-bold text-gold text-center whitespace-nowrap">
+          <div className="hover-box bg-gradient-to-br from-gold/30 to-yellow-500/30 border-2 border-gold/70 rounded-xl px-6 py-4 backdrop-blur-sm shadow-lg min-w-[140px] transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-gold/20 hover:border-gold">
+            <h4 className="text-base font-bold text-gold text-center whitespace-nowrap transition-all duration-300 hover:text-yellow-300">
               {title}
             </h4>
           </div>
         </div>
 
         {/* Connection line from team header to team head */}
-        <div className="w-px h-8 bg-white mb-4"></div>
+        <div className="w-1 h-8 bg-gradient-to-b from-gold to-white mb-4 shadow-sm shadow-gold/20 rounded-full"></div>
 
         {/* Head Member (if exists) */}
         {head && (
@@ -408,7 +433,7 @@ export default function TeamSection() {
 
         {/* Connection line to team members */}
         {teamMembers.length > 0 && head && (
-          <div className="w-px h-6 bg-white mb-4"></div>
+          <div className="w-1 h-6 bg-gradient-to-b from-gold to-white mb-4 shadow-sm shadow-gold/20 rounded-full"></div>
         )}
 
         {/* Team Members in Vertical Layout */}
@@ -418,7 +443,7 @@ export default function TeamSection() {
               <div key={index} className="relative">
                 {/* Connection line to each member */}
                 {index > 0 && (
-                  <div className="absolute -top-4 left-1/2 w-px h-4 bg-white -translate-x-1/2"></div>
+                  <div className="absolute -top-4 left-1/2 w-1 h-4 bg-gradient-to-b from-white to-gray-400 -translate-x-1/2 shadow-sm shadow-white/10 rounded-full"></div>
                 )}
                 <MemberCard member={member} />
               </div>
@@ -442,17 +467,17 @@ export default function TeamSection() {
               Meet the passionate individuals driving innovation in AR/VR technology
             </p>
             
-            {/* Year Selection */}
+            {/* Simplified Year Selection */}
             <div className="flex justify-center mb-12">
-              <div className="bg-gray-900/60 rounded-xl p-2 border border-gold/30 backdrop-blur-sm">
+              <div className="bg-gray-900/80 rounded-2xl p-3 border-2 border-gold/30 backdrop-blur-sm shadow-lg shadow-gold/10">
                 {Object.keys(teams).map((year) => (
                   <button
                     key={year}
                     onClick={() => setSelectedYear(year)}
-                    className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                    className={`px-8 py-4 mx-1 rounded-xl font-bold text-sm transition-all duration-300 ${
                       selectedYear === year
-                        ? 'bg-gold text-black shadow-lg transform scale-105'
-                        : 'text-gold hover:bg-gold/20 hover:scale-105'
+                        ? 'bg-gold text-black shadow-lg shadow-gold/30'
+                        : 'text-gold bg-transparent hover:bg-gold/10 hover:scale-105'
                     }`}
                   >
                     {year}
@@ -469,15 +494,15 @@ export default function TeamSection() {
           <div className="relative max-w-7xl mx-auto">
             {/* Root Node */}
             <div className="flex justify-center mb-16">
-              <div className="bg-gradient-to-br from-gold/40 to-yellow-500/40 border-3 border-gold rounded-2xl px-8 py-6 backdrop-blur-sm shadow-2xl">
-                <h3 className="text-3xl font-bold text-gold text-center">
+              <div className="hover-box bg-gradient-to-br from-gold/40 to-yellow-500/40 border-3 border-gold rounded-2xl px-8 py-6 backdrop-blur-sm shadow-2xl transition-all duration-300 hover:scale-105 hover:shadow-3xl hover:shadow-gold/30">
+                <h3 className="text-3xl font-bold text-gold text-center transition-all duration-300 hover:text-yellow-300">
                   Team Vision {selectedYear}
                 </h3>
               </div>
             </div>
 
             {/* Main trunk line from root to leadership */}
-            <div className="absolute left-1/2 top-28 w-px h-16 bg-white -translate-x-1/2"></div>
+            <div className="absolute left-1/2 top-28 w-1 h-16 bg-gradient-to-b from-gold to-white -translate-x-1/2 shadow-sm shadow-gold/20 rounded-full"></div>
 
             {/* Leadership Section with Vertical Layout and Connection Lines */}
             <LeadershipSection members={currentTeam.leadership} />
@@ -528,12 +553,12 @@ export default function TeamSection() {
             {/* Show note for 2025-2026 */}
             {selectedYear === "2025-2026" && (
               <div className="text-center mt-20">
-                <div className="bg-gray-900/80 border-2 border-gold/50 rounded-xl p-8 max-w-md mx-auto backdrop-blur-sm">
-                  <div className="w-12 h-12 mx-auto mb-4 bg-gold/20 rounded-full flex items-center justify-center">
-                    <div className="w-6 h-6 bg-gold/60 rounded-full"></div>
+                <div className="hover-box bg-gray-900/80 border-2 border-gold/50 rounded-xl p-8 max-w-md mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-gold/20 hover:border-gold/70">
+                  <div className="w-12 h-12 mx-auto mb-4 bg-gold/20 rounded-full flex items-center justify-center transition-all duration-300 hover:bg-gold/30 hover:scale-110">
+                    <div className="w-6 h-6 bg-gold/60 rounded-full transition-all duration-300 hover:bg-gold/80"></div>
                   </div>
-                  <p className="text-gold font-semibold text-lg mb-2">Coming Soon!</p>
-                  <p className="text-gray-300">
+                  <p className="text-gold font-semibold text-lg mb-2 transition-all duration-300 hover:text-yellow-300">Coming Soon!</p>
+                  <p className="text-gray-300 transition-all duration-300 hover:text-gray-200">
                     The 2025-2026 team structure will be announced at the beginning of the new academic year.
                   </p>
                 </div>
@@ -543,12 +568,39 @@ export default function TeamSection() {
         </div>
       </section>
 
-      {/* Enhanced Styles */}
+      {/* Simplified Styles */}
       <style jsx global>{`
-        /* Member card hover effects */
+        /* Universal hover box animation */
+        .hover-box {
+          position: relative;
+          overflow: hidden;
+        }
+
+        .hover-box::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+          transition: left 0.6s ease;
+          z-index: 1;
+        }
+
+        .hover-box:hover::before {
+          left: 100%;
+        }
+
+        .hover-box > * {
+          position: relative;
+          z-index: 2;
+        }
+
+        /* Enhanced member card hover effects */
         .group:hover .bg-gradient-to-br {
-          transform: scale(1.05) translateY(-2px);
-          box-shadow: 0 10px 25px rgba(255, 215, 0, 0.2);
+          transform: scale(1.05) translateY(-4px);
+          box-shadow: 0 15px 35px rgba(255, 215, 0, 0.25);
         }
 
         /* Text utilities */
@@ -559,16 +611,13 @@ export default function TeamSection() {
           overflow: hidden;
         }
 
-        /* Connection lines glow effect */
-        .bg-gold\/60:hover,
-        .bg-gold\/40:hover {
-          background: linear-gradient(to bottom, #ffd700, rgba(255, 215, 0, 0.6));
-          box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-        }
-
         /* Root node special effects */
         .shadow-2xl {
           box-shadow: 0 25px 50px -12px rgba(255, 215, 0, 0.4);
+        }
+
+        .shadow-3xl {
+          box-shadow: 0 35px 60px -12px rgba(255, 215, 0, 0.5);
         }
 
         /* Responsive adjustments for mobile */
@@ -582,15 +631,6 @@ export default function TeamSection() {
           .flex-1 {
             width: 100%;
             max-width: 300px;
-          }
-          
-          /* Hide horizontal connector lines on mobile */
-          .absolute.w-px.h-8 {
-            display: none;
-          }
-          
-          .absolute.h-px {
-            display: none;
           }
           
           .w-56 {
