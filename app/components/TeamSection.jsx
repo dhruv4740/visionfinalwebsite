@@ -5,32 +5,35 @@ export default function TeamSection() {
   const [selectedYear, setSelectedYear] = useState("2024-2025");
 
   const teams = {
-    // ...existing code...
     "2024-2025": {  
       leadership: [
         { 
           name: "Deon Menezes", 
           role: "Captain", 
           year: "TY IT",
-          bio: "Visionary founder who established Team Vision Council"
+          bio: "Visionary founder who established Team Vision Council",
+          image: "/images/TEAMS/Deon_Menezes.DNG"
         },
         { 
           name: "Krish Hadkar", 
           role: "Vice Captain", 
           year: "TY EXCP",
-          bio: "Supporting leadership and strategic planning"
+          bio: "Supporting leadership and strategic planning",
+          image: "/team/krish.jpg"
         },
         { 
           name: "Siddhant Shukla", 
           role: "Project Manager", 
           year: "SY COMPS",
-          bio: "Coordinates projects and manages team operations"
+          bio: "Coordinates projects and manages team operations",
+          image: "/team/siddhant.jpg"
         },
         { 
           name: "Sanit Dubal", 
           role: "Treasurer", 
           year: "TY IT",
-          bio: "Manages finances and budgeting for council activities"
+          bio: "Manages finances and budgeting for council activities",
+          image: "/team/sanit.jpg"
         }
       ],
       techTeam: [
@@ -38,55 +41,64 @@ export default function TeamSection() {
           name: "Pradyum Mistry", 
           role: "Tech Head", 
           year: "SY COMPS",
-          bio: "Leading technical development and innovation"
+          bio: "Leading technical development and innovation",
+          image: "/team/pradyum.jpg"
         },
         { 
           name: "Omkar Bhoir", 
           role: "Tech Team Member", 
           year: "SY COMPS",
-          bio: "Contributing to AR/VR development projects"
+          bio: "Contributing to AR/VR development projects",
+          image: "/team/omkar.jpg"
         },
         { 
           name: "Omsiddh Rane", 
           role: "Tech Team Member", 
           year: "SY COMPS",
-          bio: "Developing cutting-edge technical solutions"
+          bio: "Developing cutting-edge technical solutions",
+          image: "/team/omsiddh.jpg"
         },
         { 
           name: "Reet Jain", 
           role: "Tech Team Member", 
           year: "FY COMPS",
-          bio: "First year enthusiast in immersive technologies"
+          bio: "First year enthusiast in immersive technologies",
+          image: "/images/TEAMS/ReetJain.jpg"
         },
         { 
           name: "Soniya Vinchurkar", 
           role: "Tech Team Member", 
           year: "FY CCE",
-          bio: "Passionate about VR development and innovation"
+          bio: "Passionate about VR development and innovation",
+          image: "/images/TEAMS/soniya vinchurkar .jpg"
         },
         { 
           name: "Mahima Singh", 
           role: "Tech Team Member", 
           year: "FY COMPS",
-          bio: "Exploring AR applications and user interfaces"
+          bio: "Exploring AR applications and user interfaces",
+          image: "/images/TEAMS/Mahima Singh .jpg"
         },
         { 
           name: "Ashvatth Joshi", 
           role: "Tech Team Member", 
           year: "SY COMPS",
-          bio: "Focused on immersive experience development"
+          bio: "Focused on immersive experience development",
+          image: "/team/ashvatth.jpg"
         },
         { 
           name: "Shlok Tiwari", 
           role: "Tech Team Member", 
           year: "FY COMPS",
-          bio: "Learning and contributing to AR/VR projects"
+          bio: "Learning and contributing to AR/VR projects",
+          image: "/team/shlok.jpg"
         },
         { 
           name: "Dhruv Kothari", 
           role: "Tech Team Member", 
           year: "FY IT",
-          bio: "IT specialist working on technical infrastructure"
+          bio: "IT specialist working on technical infrastructure",
+          image: "/team/dhruv.jpg"
         }
       ],
       creativeTeam: [
@@ -94,19 +106,22 @@ export default function TeamSection() {
           name: "Shrikant Salvi", 
           role: "Creative Head", 
           year: "TY MECH",
-          bio: "Leading creative design and visual experiences"
+          bio: "Leading creative design and visual experiences",
+          image: "/team/shrikant.jpg"
         },
         { 
           name: "Richa Suryavanshi", 
           role: "Creative Team Member", 
           year: "TY EXCP",
-          bio: "Creating engaging visual content and designs"
+          bio: "Creating engaging visual content and designs",
+          image: "/team/richa.jpg"
         },
         { 
           name: "Shashwat Jain", 
           role: "Creative Team Member", 
           year: "SY COMPS",
-          bio: "Blending technology with creative design"
+          bio: "Blending technology with creative design",
+          image: "/team/shashwat.jpg"
         }
       ],
       marketingTeam: [
@@ -114,13 +129,15 @@ export default function TeamSection() {
           name: "Nishtha Savla", 
           role: "Marketing Head", 
           year: "TY COMPS",
-          bio: "Strategic marketing and brand development"
+          bio: "Strategic marketing and brand development",
+          image: "/team/nishtha.jpg"
         },
         { 
           name: "Shashank Sathish", 
           role: "Marketing Team Member", 
           year: "SY IT",
-          bio: "Digital marketing and community outreach"
+          bio: "Digital marketing and community outreach",
+          image: "/team/shashank.jpg"
         }
       ],
       operationsTeam: [
@@ -128,25 +145,29 @@ export default function TeamSection() {
           name: "Prathamesh Rawas", 
           role: "Operations Head", 
           year: "TY MECH",
-          bio: "Managing day-to-day operations and logistics"
+          bio: "Managing day-to-day operations and logistics",
+          image: "/team/prathamesh.jpg"
         },
         { 
           name: "Raunak Kumar Gupta", 
           role: "Operations Team Member", 
           year: "SY COMPS",
-          bio: "Supporting operational efficiency and coordination"
+          bio: "Supporting operational efficiency and coordination",
+          image: "/team/raunak.jpg"
         },
         { 
           name: "Shreya Deshmukh", 
           role: "Operations Team Member", 
           year: "FY AIDS",
-          bio: "Organizing events and managing resources"
+          bio: "Organizing events and managing resources",
+          image: "/team/shreya.jpg"
         },
         { 
           name: "Arshdeep Singh Kohli", 
           role: "Operations Team Member", 
           year: "TY IT",
-          bio: "Technical operations and system management"
+          bio: "Technical operations and system management",
+          image: "/team/arshdeep.jpg"
         }
       ],
       prTeam: [
@@ -154,19 +175,22 @@ export default function TeamSection() {
           name: "Ketaki Chalke", 
           role: "PRO Head", 
           year: "TY EXCP",
-          bio: "Public relations and external communications"
+          bio: "Public relations and external communications",
+          image: "/team/ketaki.jpg"
         },
         { 
           name: "Pratiksha Mahajan", 
           role: "PR Team Member", 
           year: "FY AIDS",
-          bio: "Building community relationships and engagement"
+          bio: "Building community relationships and engagement",
+          image: "/team/pratiksha.jpg"
         },
         { 
           name: "Priyal Gurav", 
           role: "PR Team Member", 
           year: "FY RAI",
-          bio: "Social media management and outreach"
+          bio: "Social media management and outreach",
+          image: "/team/pri yal.jpg"
         }
       ]
     },
@@ -337,12 +361,18 @@ export default function TeamSection() {
           isHead || isLeadership ? 'hover:shadow-gold/20' : 'hover:shadow-white/10'
         }`}>
           {/* Member Avatar */}
-          <div className={`w-12 h-12 mx-auto rounded-full ${
-            isHead || isLeadership ? 'bg-gradient-to-br from-gold/30 to-yellow-500/30' : 'bg-gradient-to-br from-gray-600/30 to-gray-700/30'
-          } mb-3 flex items-center justify-center border-2 ${
+          <div className={`w-20 h-20 mx-auto rounded-full overflow-hidden mb-3 flex items-center justify-center border-2 ${
             isHead || isLeadership ? 'border-gold/60' : 'border-gray-500/50'
           } transition-all duration-300 group-hover:scale-110`}>
-            <div className={`w-5 h-5 rounded-full ${isHead || isLeadership ? 'bg-gold' : 'bg-gray-300'} transition-all duration-300 group-hover:scale-110`}></div>
+            {member.image ? (
+              <img
+                src={member.image}
+                alt={member.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className={`w-8 h-8 rounded-full ${isHead || isLeadership ? 'bg-gold' : 'bg-gray-300'} transition-all duration-300 group-hover:scale-110`}></div>
+            )}
           </div>
           
           {/* Member Info */}
