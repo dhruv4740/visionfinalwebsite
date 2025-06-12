@@ -18,7 +18,7 @@ export default function AboutSection() {
           <div className="flex justify-center">
             <div className="w-[520px] h-[520px] relative overflow-hidden rounded-lg group">
               <Image
-                src="/images/remove bg.png"
+                src="/images/gif.gif"
                 alt="Stylized gold-tinted person wearing VR headset"
                 fill
                 className="object-cover"
