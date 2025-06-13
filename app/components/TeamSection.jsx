@@ -12,28 +12,28 @@ export default function TeamSection() {
           role: "Captain", 
           year: "TY IT",
           bio: "Visionary founder who established Team Vision Council",
-          image: "/images/TEAMS/Deon_Menezes.DNG"
+          image: "/images/TEAMS/deon.jpeg"
         },
         { 
           name: "Krish Hadkar", 
           role: "Vice Captain", 
           year: "TY EXCP",
           bio: "Supporting leadership and strategic planning",
-          image: "/team/krish.jpg"
+          image: "/images/TEAMS/krish.jpeg"
         },
         { 
           name: "Siddhant Shukla", 
           role: "Project Manager", 
           year: "SY COMPS",
           bio: "Coordinates projects and manages team operations",
-          image: "/team/siddhant.jpg"
+          image: "/images/TEAMS/siddhant.jpeg"
         },
         { 
           name: "Sanit Dubal", 
           role: "Treasurer", 
           year: "TY IT",
           bio: "Manages finances and budgeting for council activities",
-          image: "/team/sanit.jpg"
+          image: "/images/TEAMS/sanit.jpg"
         }
       ],
       techTeam: [

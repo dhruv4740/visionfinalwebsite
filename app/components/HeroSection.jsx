@@ -4,25 +4,23 @@ import Link from "next/link";
 import Background from "./Background";
 
 export default function HeroSection({ onOpenModal }) {
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    setIsLoaded(true);
-  }, []);
-
   return (
-    <section 
-      id="hero" 
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
-    >
-      <Background image="/images/hero-bg.jpg" />
+    <section className="relative flex flex-col items-center justify-center min-h-[70vh] py-24 px-4 text-center overflow-hidden">
+      {/* Gold Tracing Beam */}
+      <div className="absolute left-1/2 top-0 w-1 h-full z-10 pointer-events-none">
+        <div className="relative w-full h-full">
+          <div className="absolute left-1/2 top-0 w-2 h-full -translate-x-1/2 bg-gradient-to-b from-gold via-yellow-400/80 to-transparent opacity-80 rounded-full"></div>
+          {/* Animated beam */}
+          <div className="absolute left-1/2 w-8 h-16 -translate-x-1/2 bg-gradient-to-b from-yellow-200 via-gold to-transparent rounded-full opacity-90 animate-trace-beam"></div>
+        </div>
+      </div>
 
-      <div className="relative z-10 w-full container mx-auto px-6">
+      <div className="relative z-10">
         <div className="max-w-5xl mx-auto text-center">
           
           {/* Main Title */}
           <div className="mb-8">
-            <h1 className={`text-5xl md:text-7xl lg:text-8xl font-black text-gold transition-all duration-1000 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`} style={{ animationDelay: "200ms" }}>
+            <h1 className={`text-5xl md:text-7xl lg:text-8xl font-black text-gold transition-all duration-1000 ease-out`} style={{ animationDelay: "200ms" }}>
               <span className="inline-block hover:scale-110 hover:text-yellow-400 transition-all duration-300 cursor-default">T</span>
               <span className="inline-block hover:scale-110 hover:text-yellow-400 transition-all duration-300 cursor-default">E</span>
               <span className="inline-block hover:scale-110 hover:text-yellow-400 transition-all duration-300 cursor-default">A</span>
@@ -42,7 +40,7 @@ export default function HeroSection({ onOpenModal }) {
           </div>
 
           {/* Animated Subtitle */}
-          <div className={`mb-12 transition-all duration-1000 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ animationDelay: "600ms" }}>
+          <div className={`mb-12 transition-all duration-1000 ease-out`} style={{ animationDelay: "600ms" }}>
             <p className="text-lg md:text-xl text-gray-200 leading-relaxed max-w-3xl mx-auto">
               <span className="typewriter-text">
                 Pioneering AR/VR innovation at KJ Somaiya School of Engineering
@@ -51,7 +49,7 @@ export default function HeroSection({ onOpenModal }) {
           </div>
 
           {/* Enhanced Buttons */}
-          <div className={`flex flex-col sm:flex-row gap-6 justify-center transition-all duration-1000 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ animationDelay: "800ms" }}>
+          <div className={`flex flex-col sm:flex-row gap-6 justify-center transition-all duration-1000 ease-out`} style={{ animationDelay: "800ms" }}>
             
             {/* Primary Button */}
             <button
@@ -82,7 +80,7 @@ export default function HeroSection({ onOpenModal }) {
           </div>
 
           {/* Scroll Indicator */}
-          <div className={`absolute bottom-8 left-1/2 transform -translate-x-1/2 transition-all duration-1000 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ animationDelay: '1000ms' }}>
+          <div className={`absolute bottom-8 left-1/2 transform -translate-x-1/2 transition-all duration-1000 ease-out`} style={{ animationDelay: '1000ms' }}>
             <div className="flex flex-col items-center text-gold/60 hover:text-gold transition-colors duration-300 cursor-pointer group">
               <div className="w-px h-8 bg-gold/40 group-hover:bg-gold transition-colors duration-300"></div>
               <div className="w-2 h-2 bg-gold/60 rounded-full mt-2 group-hover:bg-gold transition-all duration-300 animate-bounce"></div>
@@ -110,6 +108,15 @@ export default function HeroSection({ onOpenModal }) {
         @keyframes blink-caret {
           from, to { border-color: transparent; }
           50% { border-color: #B8860B; }
+        }
+
+        @keyframes trace-beam {
+          0% { top: 0; opacity: 0.9; }
+          80% { opacity: 1; }
+          100% { top: 90%; opacity: 0; }
+        }
+        .animate-trace-beam {
+          animation: trace-beam 2.5s linear infinite;
         }
 
         /* Enhanced hover effects */
