@@ -6,14 +6,7 @@ import Background from "./Background";
 export default function HeroSection({ onOpenModal }) {
   return (
     <section className="relative flex flex-col items-center justify-center min-h-[70vh] py-24 px-4 text-center overflow-hidden">
-      {/* Gold Tracing Beam */}
-      <div className="absolute left-1/2 top-0 w-1 h-full z-10 pointer-events-none">
-        <div className="relative w-full h-full">
-          <div className="absolute left-1/2 top-0 w-2 h-full -translate-x-1/2 bg-gradient-to-b from-gold via-yellow-400/80 to-transparent opacity-80 rounded-full"></div>
-          {/* Animated beam */}
-          <div className="absolute left-1/2 w-8 h-16 -translate-x-1/2 bg-gradient-to-b from-yellow-200 via-gold to-transparent rounded-full opacity-90 animate-trace-beam"></div>
-        </div>
-      </div>
+      {/* Remove tracing beam */}
 
       <div className="relative z-10">
         <div className="max-w-5xl mx-auto text-center">
@@ -108,15 +101,6 @@ export default function HeroSection({ onOpenModal }) {
         @keyframes blink-caret {
           from, to { border-color: transparent; }
           50% { border-color: #B8860B; }
-        }
-
-        @keyframes trace-beam {
-          0% { top: 0; opacity: 0.9; }
-          80% { opacity: 1; }
-          100% { top: 90%; opacity: 0; }
-        }
-        .animate-trace-beam {
-          animation: trace-beam 2.5s linear infinite;
         }
 
         /* Enhanced hover effects */
