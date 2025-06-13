@@ -361,17 +361,17 @@ export default function TeamSection() {
           isHead || isLeadership ? 'hover:shadow-gold/20' : 'hover:shadow-white/10'
         }`}>
           {/* Member Avatar */}
-          <div className={`w-20 h-20 mx-auto rounded-full overflow-hidden mb-3 flex items-center justify-center border-2 ${
+          <div className={`w-28 h-28 mx-auto rounded-full overflow-hidden mb-3 flex items-center justify-center border-2 ${
             isHead || isLeadership ? 'border-gold/60' : 'border-gray-500/50'
-          } transition-all duration-300 group-hover:scale-110`}>
+          } transition-all duration-300 group-hover:scale-125`}>
             {member.image ? (
               <img
                 src={member.image}
                 alt={member.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-300"
               />
             ) : (
-              <div className={`w-8 h-8 rounded-full ${isHead || isLeadership ? 'bg-gold' : 'bg-gray-300'} transition-all duration-300 group-hover:scale-110`}></div>
+              <div className={`w-12 h-12 rounded-full ${isHead || isLeadership ? 'bg-gold' : 'bg-gray-300'} transition-all duration-300 group-hover:scale-110`}></div>
             )}
           </div>
           

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-export default function Background({ video = "/images/bgvideo2.mp4" }) {
+export default function Background({ image = "/images/bggif.gif" }) {
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
   const particlesRef = useRef([]);
@@ -354,17 +354,10 @@ export default function Background({ video = "/images/bgvideo2.mp4" }) {
 
   return (
     <div className="fixed inset-0 z-0">
-      {/* Video background */}
-      <video
-        className="absolute inset-0 w-full h-full object-cover object-center"
-        src={video}
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        style={{ zIndex: 0 }}
-        onEnded={e => { e.target.currentTime = 0; e.target.play(); }} // Ensure video loops even if browser fails to loop
+      {/* Image background */}
+      <div
+        className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url('${image}')`, zIndex: 0 }}
       />
       <div className="absolute inset-0 bg-black/40"></div>
       <canvas
